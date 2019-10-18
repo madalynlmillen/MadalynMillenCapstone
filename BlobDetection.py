@@ -25,6 +25,7 @@ if saved:
     waitKey(0)
     destroyWindow("Camera")
     imwrite("workSpace.jpg", image)
+    camera.release()
 
 color = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 color = cv2.GaussianBlur(color, (7,7), 0)
