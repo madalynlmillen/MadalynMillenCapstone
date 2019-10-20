@@ -9,6 +9,8 @@
 '''
 import numpy as np
 from scipy.spatial import distance as dist
+from imutils import contours
+from imutils import perspective
 from imutils import *
 from cv2 import *
 from argparse import *
@@ -19,7 +21,11 @@ def midpoint(point1, point2):
     return ((point1[0] + point2[0]) * 0.5, (point1[1] + point2[1]) * 0.5)
 
 argpar = ArgumentParser()
-argpar =
+argpar.add_argument("-i", "--image", required=True,
+	help="path to the input image")
+argpar.add_argument("-w", "--width", type=float, required=True,
+	help="width of the left-most object in the image (in inches)")
+args = vars(argpar.parse_args())
 #https://stackoverflow.com/questions/11094481/capturing-a-single-image-from-my-webcam-in-java-or-python
 camera = VideoCapture(0)
 saved, image = camera.read()
@@ -31,6 +37,7 @@ if saved:
         raise Exception("Could not write image")
     camera.release()
 
+image = imread(args["image"])
 color = cvtColor(image, COLOR_BGR2GRAY)
 color = GaussianBlur(color, (7,7), 0)
 
@@ -39,26 +46,63 @@ edgeDetection = dilate(edgeDetection, None, iterations=1)
 edgeDetection = erode(edgeDetection, None, iterations=1)
 
 contors = findContours(edgeDetection.copy(), RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)
-contors = imutils.grab_contours(contors)
+contors = grab_contours(contors)
 
 (contors, _) = contours.sort_contours(contors)
 pixelsPerMetric = None
 
-dimension1 = dist.euclidean()
-dimension2 = dist.euclidean()
+for cnts in contors:
+    if contourArea(cnts) < 100:
+        continue
 
-dimension1 = dimension1 / pixelsPerMetric
-dimension2 = dimension2 / pixelsPerMetric
+    original = image.copy()
+    box = minAreaRect(cnts)
+    box = cv.BoxPoints(box) if is_cv2() else boxPoints(box)
+    box = np.array(box, dtype="int")
 
-imshow("image", orig)
-waitKey(0)
+    box = perspective.order_points(box)
+    drawContours(original, [box.astype("int")], -1, (0,255,0), 2)
+
+    for (x,y) in box:
+        circle(original, (int(x), int(y)), 5, (0,0,255), -1)
+
+    (topLeft, topRight, bottomRight, bottomLeft) = box
+    (topX, topY) = midpoint(topLeft, topRight)
+    (bottomX, bottomY) = midpoint(bottomLeft, bottomRight)
+
+    (topBotLX, topBotLY) = midpoint(topLeft, bottomLeft)
+    (botTopRX, botTopRY) = midpoint(topRight, bottomRight)
+
+    circle(original, (int(topX), int(topY)), 5, (255,0,0), -1)
+    circle(original, (int(bottomX), int(bottomY)), 5, (255,0,0), -1)
+    circle(original, (int(topBotLX), int(topBotLY)), 5, (255,0,0), -1)
+    circle(original, (int(botTopRX), int(botTopRY)), 5, (255,0,0), -1)
+
+    line(original, (int(topX), int(topY)), (int(bottomX), int(bottomY)), (255,0,255), 2)
+    line(original, (int(topBotLX), int(topBotLY)), (int(botTopRX), int(botTopRY)), (255,0,255), 2)
+
+    dimension1 = dist.euclidean((topX, topY), (bottomX, bottomY))
+    dimension2 = dist.euclidean((topBotLX, topBotLY), (botTopRX, botTopRY))
+
+    if pixelsPerMetric is None:
+        pixelsPerMetric = dimension2 / args["width"]
+
+    dimension1 = dimension1 / pixelsPerMetric
+    dimension2 = dimension2 / pixelsPerMetric
+
+    putText(original, "{:.1f}in".format(dimension1),(int(topX - 15), int(topY - 10)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
+    putText(original, "{:.1f}in".format(dimension2),(int(botTopRX + 10), int(botTopRY)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
+
+    imshow("image", original)
+    waitKey(0)
 '''Code from Robotics Git'''
-mask = inRange(color, )
+'''mask = inRange(color, )
 mask = erode(mask, None, iterations=2)
 mask = dilate(mask, None, iterations=2)
 
-contors = cv2.findContours(mask, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)[-2]
+contors = contours.findContours(mask, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)[-2]
 center = None
+
 
 if len(contors) > 0:
     cnts = max(contors, key=contourArea)
@@ -73,7 +117,7 @@ for i in range(1, len(points)):
     if points[i - 1] is None or points[i] is None:
         continue
     thickness = int(np.sqrt())
-'''End of Robotics Git Code'''
+''''''End of Robotics Git Code''''''
 #(coun)
 # Read image
 image = imread("stakeTest4.jpg", IMREAD_GRAYSCALE) #don't forget to alter code to read new images taken
@@ -107,7 +151,7 @@ params.filterByInertia = True
 params.minInertiaRatio = 0.01
 
 # Create a detector with the parameters
-ver = imutils.check_opencv_version("2.")
+ver = check_opencv_version("2.")
 if ver:
     detector = SimpleBlobDetector(params)
 else:
