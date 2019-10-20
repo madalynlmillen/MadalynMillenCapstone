@@ -11,43 +11,47 @@ import numpy as np
 import math
 import imutils
 from cv2 import *
+from argparse import *
 
 
-'''https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/'''
+#https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 def midpoint(point1, point2):
     return ((point1[0] + point2[0]) * 0.5, (point1[1] + point2[1]) * 0.5)
+
+argpar = ArgumentParser()
+argpar =
 #https://stackoverflow.com/questions/11094481/capturing-a-single-image-from-my-webcam-in-java-or-python
 camera = VideoCapture(0)
 saved, image = camera.read()
 if saved:
     namedWindow("Camera")
     imshow("Camera", image)
-    waitKey(0)
-    destroyWindow("Camera")
-    imwrite("workSpace.jpg", image)
+    #destroyWindow("Camera")
+    if not imwrite("workSpace.jpg", image):
+        raise Exception("Could not write image")
     camera.release()
 
-color = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-color = cv2.GaussianBlur(color, (7,7), 0)
+color = cvtColor(image, COLOR_BGR2GRAY)
+color = GaussianBlur(color, (7,7), 0)
 
-edgeDetection = cv2.Canny(color, 50, 100)
-edgeDetection = cv2.dilate(edgeDetection, None, iterations=1)
-edgeDetection = cv2.erode(edgeDetection, None, iterations=1)
+edgeDetection =  Canny(color, 50, 100)
+edgeDetection = dilate(edgeDetection, None, iterations=1)
+edgeDetection = erode(edgeDetection, None, iterations=1)
 
-contors = cv2.findContours(edgeDetection.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+contors = findContours(edgeDetection.copy(), RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)
 contors = imutils.grab_contours(contors)
-
+'''
 #(coun)
-'''# Read image
-image = cv2.imread("armTest.jpg", cv2.IMREAD_GRAYSCALE) #don't forget to alter code to read new images taken
+# Read image
+image = imread("stakeTest4.jpg", IMREAD_GRAYSCALE) #don't forget to alter code to read new images taken
 # Setup SimpleBlobDetector parameters.
-ret, thresh = cv2.threshold(image, 127, 255, 0)
-contours, hierarchy = cv2.findContours(thresh, 1, 2)
+ret, thresh = threshold(image, 127, 255, 0)
+contours = findContours(thresh, 1, 2)
 
 cont = contours[0]
-m = cv2.moments(cont)
+m = moments(cont)
 print (m)
-params = cv2.SimpleBlobDetector_Params()
+params = SimpleBlobDetector_Params()
 
 # Change thresholds
 params.minThreshold = 10
@@ -70,18 +74,19 @@ params.filterByInertia = True
 params.minInertiaRatio = 0.01
 
 # Create a detector with the parameters
-ver = (cv2.__version__).split('.')
-if int(ver[0]) < 3:
-    detector = cv2.SimpleBlobDetector(params)
+ver = imutils.check_opencv_version("2.")
+if ver:
+    detector = SimpleBlobDetector(params)
 else:
-    detector = cv2.SimpleBlobDetector_create(params)
+    detector = SimpleBlobDetector_create(params)
+
 # Detect blobs
 keypoints = detector.detect(image)
 # Draw detected blobs as red circles. cv2 ensures the circle corresponds to the size of the blob
-imageKP = cv2.drawKeypoints(image, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+imageKP = drawKeypoints(image, keypoints, np.array([]), (0,0,255), DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 # Show keypoints
-cv2.imshow("Keypoints", imageKP)
-cv2.waitKey(0)
+imshow("demo", imageKP)
+waitKey(0)
 #End of Borrowed Code
 class Triangle:
     def __init__(self, point1, point2, point3):
@@ -116,8 +121,8 @@ class Detector:
         pass
     def detect(self, contour):
         shape = None
-        perimeter = cv2.arcLength(contour, True)
-        approxOfShape = cv2.approxPolyDP(contour, 0.04 * perimeter, True)
+        perimeter = arcLength(contour, True)
+        approxOfShape = approxPolyDP(contour, 0.04 * perimeter, True)
 
         if approxOfShape == 3:
             shape = Triangle((0,0), (0,0), (0,0))
