@@ -8,11 +8,11 @@
 ' Make sure to install imutils (pip install imutils) for object detector
 '''
 import numpy as np
-import math
-import imutils
+from scipy.spatial import distance as dist
+from imutils import *
 from cv2 import *
 from argparse import *
-
+from collections import deque
 
 #https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 def midpoint(point1, point2):
@@ -40,7 +40,40 @@ edgeDetection = erode(edgeDetection, None, iterations=1)
 
 contors = findContours(edgeDetection.copy(), RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)
 contors = imutils.grab_contours(contors)
-'''
+
+(contors, _) = contours.sort_contours(contors)
+pixelsPerMetric = None
+
+dimension1 = dist.euclidean()
+dimension2 = dist.euclidean()
+
+dimension1 = dimension1 / pixelsPerMetric
+dimension2 = dimension2 / pixelsPerMetric
+
+imshow("image", orig)
+waitKey(0)
+'''Code from Robotics Git'''
+mask = inRange(color, )
+mask = erode(mask, None, iterations=2)
+mask = dilate(mask, None, iterations=2)
+
+contors = cv2.findContours(mask, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)[-2]
+center = None
+
+if len(contors) > 0:
+    cnts = max(contors, key=contourArea)
+    ((x,y), radius) = minEnclosingCircle(cnts)
+    mom = moments(cnts)
+    center = (int(mom["m10"] / mom["m00"]), int(mom["m01"] / mom["m00"]))
+
+points = deque
+points.appendleft(center)
+
+for i in range(1, len(points)):
+    if points[i - 1] is None or points[i] is None:
+        continue
+    thickness = int(np.sqrt())
+'''End of Robotics Git Code'''
 #(coun)
 # Read image
 image = imread("stakeTest4.jpg", IMREAD_GRAYSCALE) #don't forget to alter code to read new images taken
@@ -59,7 +92,7 @@ params.maxThreshold = 200
 
 # Filter by Area.
 params.filterByArea = True
-params.minArea = 1500
+params.minArea = 2500
 
 # Filter by Circularity
 params.filterByCircularity = True
