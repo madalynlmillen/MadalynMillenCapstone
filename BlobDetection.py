@@ -20,81 +20,87 @@ from collections import deque
 def midpoint(point1, point2):
     return ((point1[0] + point2[0]) * 0.5, (point1[1] + point2[1]) * 0.5)
 
-argpar = ArgumentParser()
-argpar.add_argument("-i", "--image", required=True,
-	help="path to the input image")
-argpar.add_argument("-w", "--width", type=float, required=True,
-	help="width of the left-most object in the image (in inches)")
-args = vars(argpar.parse_args())
-#https://stackoverflow.com/questions/11094481/capturing-a-single-image-from-my-webcam-in-java-or-python
-camera = VideoCapture(0)
-saved, image = camera.read()
-if saved:
-    namedWindow("Camera")
-    imshow("Camera", image)
-    #destroyWindow("Camera")
-    if not imwrite("workSpace.jpg", image):
-        raise Exception("Could not write image")
-    camera.release()
+def detectAndDraw():
+    argpar = ArgumentParser()
+    argpar.add_argument("-i", "--image", required=True,
+        help="path to the input image")
+    argpar.add_argument("-w", "--width", type=float, required=True,
+        help="width of the left-most object in the image (in inches)")
+    args = vars(argpar.parse_args())
+    #https://stackoverflow.com/questions/11094481/capturing-a-single-image-from-my-webcam-in-java-or-python
+    camera = VideoCapture(0)
+    saved, image = camera.read()
+    if saved:
+        namedWindow("Camera")
+        imshow("Camera", image)
+        #destroyWindow("Camera")
+        if not imwrite("workSpace.jpg", image):
+            raise Exception("Could not write image")
+        camera.release()
 
-image = imread(args["image"])
-color = cvtColor(image, COLOR_BGR2GRAY)
-color = GaussianBlur(color, (7,7), 0)
+    image = imread(args["image"])
+    color = cvtColor(image, COLOR_BGR2GRAY)
+    color = GaussianBlur(color, (7,7), 0)
 
-edgeDetection =  Canny(color, 50, 100)
-edgeDetection = dilate(edgeDetection, None, iterations=1)
-edgeDetection = erode(edgeDetection, None, iterations=1)
+    edgeDetection =  Canny(color, 50, 100)
+    edgeDetection = dilate(edgeDetection, None, iterations=1)
+    edgeDetection = erode(edgeDetection, None, iterations=1)
 
-contors = findContours(edgeDetection.copy(), RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)
-contors = grab_contours(contors)
+    contors = findContours(edgeDetection.copy(), RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)
+    contors = grab_contours(contors)
 
-(contors, _) = contours.sort_contours(contors)
-pixelsPerMetric = None
+    (contors, _) = contours.sort_contours(contors)
+    pixelsPerMetric = None
 
-for cnts in contors:
-    if contourArea(cnts) < 100:
-        continue
+    listOfPoints = []
+    for cnts in contors:
+        if contourArea(cnts) < 100:
+            continue
 
-    original = image.copy()
-    box = minAreaRect(cnts)
-    box = cv.BoxPoints(box) if is_cv2() else boxPoints(box)
-    box = np.array(box, dtype="int")
+        original = image.copy()
+        box = minAreaRect(cnts)
+        box = cv.BoxPoints(box) if is_cv2() else boxPoints(box)
+        box = np.array(box, dtype="int")
 
-    box = perspective.order_points(box)
-    drawContours(original, [box.astype("int")], -1, (0,255,0), 2)
+        box = perspective.order_points(box)
+        drawContours(original, [box.astype("int")], -1, (0,255,0), 2)
 
-    for (x,y) in box:
-        circle(original, (int(x), int(y)), 5, (0,0,255), -1)
+        listOfPoints.append(box)
 
-    (topLeft, topRight, bottomRight, bottomLeft) = box
-    (topX, topY) = midpoint(topLeft, topRight)
-    (bottomX, bottomY) = midpoint(bottomLeft, bottomRight)
+        for (x,y) in box:
+            circle(original, (int(x), int(y)), 5, (0,0,255), -1)
 
-    (topBotLX, topBotLY) = midpoint(topLeft, bottomLeft)
-    (botTopRX, botTopRY) = midpoint(topRight, bottomRight)
+        (topLeft, topRight, bottomRight, bottomLeft) = box
+        (topX, topY) = midpoint(topLeft, topRight)
+        (bottomX, bottomY) = midpoint(bottomLeft, bottomRight)
 
-    circle(original, (int(topX), int(topY)), 5, (255,0,0), -1)
-    circle(original, (int(bottomX), int(bottomY)), 5, (255,0,0), -1)
-    circle(original, (int(topBotLX), int(topBotLY)), 5, (255,0,0), -1)
-    circle(original, (int(botTopRX), int(botTopRY)), 5, (255,0,0), -1)
+        (topBotLX, topBotLY) = midpoint(topLeft, bottomLeft)
+        (botTopRX, botTopRY) = midpoint(topRight, bottomRight)
 
-    line(original, (int(topX), int(topY)), (int(bottomX), int(bottomY)), (255,0,255), 2)
-    line(original, (int(topBotLX), int(topBotLY)), (int(botTopRX), int(botTopRY)), (255,0,255), 2)
+        circle(original, (int(topX), int(topY)), 5, (255,0,0), -1)
+        circle(original, (int(bottomX), int(bottomY)), 5, (255,0,0), -1)
+        circle(original, (int(topBotLX), int(topBotLY)), 5, (255,0,0), -1)
+        circle(original, (int(botTopRX), int(botTopRY)), 5, (255,0,0), -1)
 
-    dimension1 = dist.euclidean((topX, topY), (bottomX, bottomY))
-    dimension2 = dist.euclidean((topBotLX, topBotLY), (botTopRX, botTopRY))
+        line(original, (int(topX), int(topY)), (int(bottomX), int(bottomY)), (255,0,255), 2)
+        line(original, (int(topBotLX), int(topBotLY)), (int(botTopRX), int(botTopRY)), (255,0,255), 2)
 
-    if pixelsPerMetric is None:
-        pixelsPerMetric = dimension2 / args["width"]
+        dimension1 = dist.euclidean((topX, topY), (bottomX, bottomY))
+        dimension2 = dist.euclidean((topBotLX, topBotLY), (botTopRX, botTopRY))
 
-    dimension1 = dimension1 / pixelsPerMetric
-    dimension2 = dimension2 / pixelsPerMetric
+        if pixelsPerMetric is None:
+            pixelsPerMetric = dimension2 / args["width"]
 
-    putText(original, "{:.1f}in".format(dimension1),(int(topX - 15), int(topY - 10)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
-    putText(original, "{:.1f}in".format(dimension2),(int(botTopRX + 10), int(botTopRY)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
+        dimension1 = dimension1 / pixelsPerMetric
+        dimension2 = dimension2 / pixelsPerMetric
 
-    imshow("image", original)
-    waitKey(0)
+        putText(original, "{:.1f}in".format(dimension1),(int(topX - 15), int(topY - 10)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
+        putText(original, "{:.1f}in".format(dimension2),(int(botTopRX + 10), int(botTopRY)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
+
+        imshow("image", original)
+        waitKey(0)
+
+    return listOfPoints
 '''Code from Robotics Git'''
 '''mask = inRange(color, )
 mask = erode(mask, None, iterations=2)
@@ -165,46 +171,4 @@ imageKP = drawKeypoints(image, keypoints, np.array([]), (0,0,255), DRAW_MATCHES_
 imshow("demo", imageKP)
 waitKey(0)
 #End of Borrowed Code
-class Triangle:
-    def __init__(self, point1, point2, point3):
-        self.point1 = point1
-        self.point2 = point2
-        self.point3 = point3
-    def getPerimeter(self):
-        return 0
-
-class Square:
-    def __init__(self, point1, point2, point3, point4):
-        self.point1 = point1
-        self.point2 = point2
-        self.point3 = point3
-        self.point4 = point4
-    def getPerimeter(self):
-        return 0
-
-class Circle:
-    def __init__(self, center, radius):
-        self.center = center
-        self.radius = radius
-    def getCircumfrence(self):
-        return 2 * math.pi * self.radius
-
-
 '''
-#Code inspired by https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
-'''
-class Detector:
-    def __init__(self):
-        pass
-    def detect(self, contour):
-        shape = None
-        perimeter = arcLength(contour, True)
-        approxOfShape = approxPolyDP(contour, 0.04 * perimeter, True)
-
-        if approxOfShape == 3:
-            shape = Triangle((0,0), (0,0), (0,0))
-        if approxOfShape == 4:
-            shape = Square((0,0), (0,0), (0,0), (0,0))
-        else:
-            shape = Circle((0,0), 0)
-        return shape'''
