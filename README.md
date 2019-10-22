@@ -14,6 +14,6 @@ BlobDetection.py takes a picture of the given workspace, examines that picture, 
 
 ConfigSpaceConversion.py runs the detectAndDraw() code and takes the list outputted. It then converts those pixel measurements into numbers that can be used for path planning. It also calculates the safe spaces around each of the obstacles.
 
-.idea, build, devel, and src are all catkin and ROS files, copied over from the ROS repository. These files are used as the framework for programming with ROS.
+.idea, build, devel, and src are all catkin and ROS files, copied over from the ROS repository. These files are used as the framework for programming with ROS. This files are currently not in use as of 10/22/2019, as the program has not yet moved into testing on the actual robotic arm yet. 
 
 All .jpg files were either taken by me or taken by running the code in BlobDetection.py. These photos are of example workspaces with a few different layouts of obstacles to test the blob detection code.
