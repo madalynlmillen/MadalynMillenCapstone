@@ -20,7 +20,7 @@ from collections import deque
 def midpoint(point1, point2):
     return ((point1[0] + point2[0]) * 0.5, (point1[1] + point2[1]) * 0.5)
 
-def detectAndDraw():
+def takePhoto():
     argpar = ArgumentParser()
     argpar.add_argument("-i", "--image", required=True,
         help="path to the input image")
@@ -33,12 +33,14 @@ def detectAndDraw():
     if saved:
         namedWindow("Camera")
         imshow("Camera", image)
-        #destroyWindow("Camera")
+        destroyWindow("Camera")
         if not imwrite("workSpace.jpg", image):
             raise Exception("Could not write image")
         camera.release()
-
     image = imread(args["image"])
+    return args, image
+
+def detectAndDraw(args, image):
     color = cvtColor(image, COLOR_BGR2GRAY)
     color = GaussianBlur(color, (7,7), 0)
 
@@ -50,125 +52,66 @@ def detectAndDraw():
     contors = grab_contours(contors)
 
     (contors, _) = contours.sort_contours(contors)
-    pixelsPerMetric = None
 
     listOfPoints = []
     for cnts in contors:
-        if contourArea(cnts) < 100:
-            continue
-
-        original = image.copy()
-        box = minAreaRect(cnts)
-        box = cv.BoxPoints(box) if is_cv2() else boxPoints(box)
-        box = np.array(box, dtype="int")
-
-        box = perspective.order_points(box)
-        drawContours(original, [box.astype("int")], -1, (0,255,0), 2)
-
-        listOfPoints.append(box)
-
-        for (x,y) in box:
-            circle(original, (int(x), int(y)), 5, (0,0,255), -1)
-
-        (topLeft, topRight, bottomRight, bottomLeft) = box
-        (topX, topY) = midpoint(topLeft, topRight)
-        (bottomX, bottomY) = midpoint(bottomLeft, bottomRight)
-
-        (topBotLX, topBotLY) = midpoint(topLeft, bottomLeft)
-        (botTopRX, botTopRY) = midpoint(topRight, bottomRight)
-
-        circle(original, (int(topX), int(topY)), 5, (255,0,0), -1)
-        circle(original, (int(bottomX), int(bottomY)), 5, (255,0,0), -1)
-        circle(original, (int(topBotLX), int(topBotLY)), 5, (255,0,0), -1)
-        circle(original, (int(botTopRX), int(botTopRY)), 5, (255,0,0), -1)
-
-        line(original, (int(topX), int(topY)), (int(bottomX), int(bottomY)), (255,0,255), 2)
-        line(original, (int(topBotLX), int(topBotLY)), (int(botTopRX), int(botTopRY)), (255,0,255), 2)
-
-        dimension1 = dist.euclidean((topX, topY), (bottomX, bottomY))
-        dimension2 = dist.euclidean((topBotLX, topBotLY), (botTopRX, botTopRY))
-
-        if pixelsPerMetric is None:
-            pixelsPerMetric = dimension2 / args["width"]
-
-        dimension1 = dimension1 / pixelsPerMetric
-        dimension2 = dimension2 / pixelsPerMetric
-
-        putText(original, "{:.1f}in".format(dimension1),(int(topX - 15), int(topY - 10)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
-        putText(original, "{:.1f}in".format(dimension2),(int(botTopRX + 10), int(botTopRY)), FONT_HERSHEY_SIMPLEX,0.65, (255, 255, 255), 2)
-
-        imshow("image", original)
-        waitKey(0)
+        contourBoxes(args, image, listOfPoints, cnts)
 
     return listOfPoints
-'''Code from Robotics Git'''
-'''mask = inRange(color, )
-mask = erode(mask, None, iterations=2)
-mask = dilate(mask, None, iterations=2)
 
-contors = contours.findContours(mask, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)[-2]
-center = None
+def contourBoxes(args, image, listOfPoints, cnts):
+    if contourArea(cnts) < 100:
+        return
 
+    original = image.copy()
+    box = minAreaRect(cnts)
+    box = cv.BoxPoints(box) if is_cv2() else boxPoints(box)
+    box = np.array(box, dtype="int")
 
-if len(contors) > 0:
-    cnts = max(contors, key=contourArea)
-    ((x,y), radius) = minEnclosingCircle(cnts)
-    mom = moments(cnts)
-    center = (int(mom["m10"] / mom["m00"]), int(mom["m01"] / mom["m00"]))
+    box = perspective.order_points(box)
+    (topLeft, topRight, botRight, botLeft) = box
+    x1, y1 = topLeft
+    x2, y2 = topRight
+    x3, y3 = botRight
+    x4, y4 = botLeft
+    listOfPoints.append(getLine(x1, y1, x2, y2))
+    listOfPoints.append(getLine(x2, y2, x3, y3))
+    listOfPoints.append(getLine(x3, y3, x4, y4))
+    listOfPoints.append(getLine(x1, y1, x4, y4))
+    drawContours(original, [box.astype("int")], -1, (0,0,0), 2)
 
-points = deque
-points.appendleft(center)
+    imshow("image", original)
+    waitKey(300)
 
-for i in range(1, len(points)):
-    if points[i - 1] is None or points[i] is None:
-        continue
-    thickness = int(np.sqrt())
-''''''End of Robotics Git Code''''''
-#(coun)
-# Read image
-image = imread("stakeTest4.jpg", IMREAD_GRAYSCALE) #don't forget to alter code to read new images taken
-# Setup SimpleBlobDetector parameters.
-ret, thresh = threshold(image, 127, 255, 0)
-contours = findContours(thresh, 1, 2)
-
-cont = contours[0]
-m = moments(cont)
-print (m)
-params = SimpleBlobDetector_Params()
-
-# Change thresholds
-params.minThreshold = 10
-params.maxThreshold = 200
-
-# Filter by Area.
-params.filterByArea = True
-params.minArea = 2500
-
-# Filter by Circularity
-params.filterByCircularity = True
-params.minCircularity = 0.1
-
-# Filter by Convexity
-params.filterByConvexity = True
-params.minConvexity = 0.87
-
-# Filter by Inertia
-params.filterByInertia = True
-params.minInertiaRatio = 0.01
-
-# Create a detector with the parameters
-ver = check_opencv_version("2.")
-if ver:
-    detector = SimpleBlobDetector(params)
-else:
-    detector = SimpleBlobDetector_create(params)
-
-# Detect blobs
-keypoints = detector.detect(image)
-# Draw detected blobs as red circles. cv2 ensures the circle corresponds to the size of the blob
-imageKP = drawKeypoints(image, keypoints, np.array([]), (0,0,255), DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-# Show keypoints
-imshow("demo", imageKP)
-waitKey(0)
-#End of Borrowed Code
-'''
+#https://stackoverflow.com/questions/25837544/get-all-points-of-a-straight-line-in-python
+def getLine(x1, y1, x2, y2):
+    allPoints = []
+    isStep = abs(y2 - y1) > abs(x2 - x1)
+    if isStep:
+        x1, y1 = y1, x1
+        x2, y2 = y2, x2
+    isReversed = False
+    if x1 > x2:
+        x1, x2 = x2, x1
+        y1, y2 = y2, y1
+        isReversed = True
+    deltaX = x2 - x1
+    deltaY = abs(y2 - y1)
+    error = int(deltaX / 2)
+    y = y1
+    if y1 < y2:
+        yStep = 1
+    else:
+        yStep = -1
+    for x in range(int(x1), int(x2 + 1)):
+        if isStep:
+            allPoints.append((y, x))
+        else:
+            allPoints.append((x, y))
+        error -= deltaY
+        if error < 0:
+            y += yStep
+            error += deltaX
+    if isReversed:
+        allPoints.reverse()
+    return allP
