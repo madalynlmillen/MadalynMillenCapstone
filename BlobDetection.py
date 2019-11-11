@@ -65,7 +65,7 @@ def contourBoxes(args, image, listOfPoints, cnts):
 
     original = image.copy()
     box = minAreaRect(cnts)
-    box = cv.BoxPoints(box) if is_cv2() else boxPoints(box)
+    box = boxPoints(box)
     box = np.array(box, dtype="int")
 
     box = perspective.order_points(box)
@@ -79,7 +79,6 @@ def contourBoxes(args, image, listOfPoints, cnts):
     listOfPoints.append(getLine(x3, y3, x4, y4))
     listOfPoints.append(getLine(x1, y1, x4, y4))
     drawContours(original, [box.astype("int")], -1, (0,0,0), 2)
-
     imshow("image", original)
     waitKey(300)
 
@@ -114,4 +113,4 @@ def getLine(x1, y1, x2, y2):
             error += deltaX
     if isReversed:
         allPoints.reverse()
-    return allP
+    return allPoints
