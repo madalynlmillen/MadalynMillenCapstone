@@ -9,23 +9,8 @@ import sys
 import numpy as np
 ConfigSpaceConversion.convertObjects()
 #following code taken from https://github.com/CNURobotics/chris_scripts/blob/kinetic_devel/scripts/helper/plot_bag_odom.py
-print
-'Number of arguments:', len(sys.argv), 'arguments.'
-print
-'Argument List:', str(sys.argv)
 
-if (len(sys.argv) == 2) and (sys.argv[1] == '--help'):
-    print
-    "Usage: plot_bag file_name> <\"use_ground_truth\"> <start_time> <end_time> "
-    print
-    "  plot_bag 2015-01-15-10-13-41.bag  0 10.4 20.5"
-    print
-    "    set use_ground_truth = 0 for not, 1 for use"
-    sys.exit(1)
-
-file_name = 'log.bag'
-if (len(sys.argv) > 1):
-    file_name = sys.argv[1]
+file_name = 'path.bag'
 
 use_ground_truth = False
 if (len(sys.argv) > 2):

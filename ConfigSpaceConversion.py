@@ -4,6 +4,7 @@ np.set_printoptions(threshold=sys.maxsize)
 from PIL import Image
 from cv2 import *
 import BlobDetection
+import makingBags
 
 '''
 #Code inspired by https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
@@ -22,7 +23,6 @@ def convertObjects():
     for j in listOfObjects:
         for pair in j:
             a,b = pair
-            print pair
             count += 1
             imageBoolList[int(b)][int(a)] = False
             newSpaceImage[int(b)][int(a)] = [255, 255, 255]
@@ -32,4 +32,5 @@ def convertObjects():
     newSpaceImage = imread('newSpaceImage.jpg')
     imshow('try', newSpaceImage)
     waitKey(10000)
+    makingBags.makeABag(imageBoolList)
     return imageBoolList
