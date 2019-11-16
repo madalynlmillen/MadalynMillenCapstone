@@ -1,233 +1,344 @@
-import numpy as np
+'''
+    Simple 2-link robot arm simulation for generating graphics for CS 471/510
+    The MIT License (MIT)
+    Copyright (c) 2015 David Conner (david.conner@cnu.edu)
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+'''
+
+import os.path
+from copy import deepcopy
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.patches as patches
 from cv2 import *
 import ConfigSpaceConversion
-# !/usr/bin/python
-import yaml
-#import pyrosbag as rosbag
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import sys
 import numpy as np
-ConfigSpaceConversion.convertObjects()
-#following code taken from https://github.com/CNURobotics/chris_scripts/blob/kinetic_devel/scripts/helper/plot_bag_odom.py
 
-file_name = 'path.bag'
+grid = ConfigSpaceConversion.convertObjects()
 
-use_ground_truth = False
-if (len(sys.argv) > 2):
-    if (sys.argv[1] != "0"):
-        use_ground_truth = True
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-start_time = 0
-end_time = 999999999999.9
+# This is the main body of the program
 
-if (len(sys.argv) > 3):
-    start_time = float(sys.argv[3])
+# Define links for our simple robot
+#             ID   Length, color, width, parent(=None default)
+link1 = Link(" 1 ", 10.0,'b',0.5)
+link2 = Link(" 2 ", 6.0,'g',0.3, link1)
 
-if (len(sys.argv) > 4):
-    end_time = float(sys.argv[4])
+# Define a robot with tuple of links (2 in this case but could add more)
+robot = RobotArm((link1, link2))
+robot.updateLinks((np.pi/4.0, -np.pi/6.0)) # Define the initial angles
 
-print
-"Read bag file ..."
-bag = rosbag.Bag(file_name, 'r')
+# Define obstacles
+obj1 = Obstacle("A", ( -5.0,  0.0), 0.5 , [0.5,0.0,0.0])
+obj2 = Obstacle("B", (  5.0,  0.0), 0.5 , [1.0,0.0,0.0])
+obj3 = Obstacle("C", (  0.0, 12.0), 1.5 , [0.5,0.5,0.5])
+obj4 = Obstacle("D", ( 10.0,  5.0), 0.85, [1.0,0.5,0.5])
+obj5 = Obstacle("E", ( -5.0, 10.0), 0.75, [0.5,1.0,0.5])
+obj6 = Obstacle("F", (-10.0,  5.0), 1.5 , [0.5,0.5,1.0])
 
-print
-"Get topic info..."
-info_dict = yaml.load(bag._get_yaml_info())
-print(info_dict['topics'])
-
-print
-"Get list ..."
-topic_list = []
-cmd_msgs = 0
-state_msgs = 0
-
-base_node = '/create_node/'
-odom_msgs = []
-ground_truth_msgs = []
-ground_truth_euler_msgs = []
-odom_euler_msgs = []
-cmd_vel_msgs = []
-time_odom = []
-x_odom = []
-y_odom = []
-z_odom = []
-theta_odom_time = []
-theta_odom = []
-time_gnd = []
-x_gnd = []
-y_gnd = []
-z_gnd = []
-theta_gnd_time = []
-theta_gnd = []
-time_cmd = []
-vx_cmd = []
-wz_cmd = []
-
-for topic_info in info_dict['topics']:
-    topic = topic_info['topic']
-    topic_list.append(topic)
-    if (topic == base_node + 'odom'):
-        odom_msgs = topic_info['messages']
-    if (topic == base_node + 'ground_truth'):
-        ground_truth_msgs = topic_info['messages']
-    if (topic == '/robot_odometry/euler'):
-        odom_euler_msgs = topic_info['messages']
-    if (topic == '/robot_ground_truth/euler'):
-        ground_truth_euler_msgs = topic_info['messages']
-
-    if (topic == base_node + 'cmd_vel'):
-        cmd_vel_msgs = topic_info['messages']
-
-print
-topic_list
-
-print
-"Message counts:"
-print
-"  odom msgs        =" + str(odom_msgs )
-print "  ground_truth msgs= " +str(  ground_truth_msgs 	)
-print "  odom euler msgs  = " +str(  odom_euler_msgs 	)
-print "  ground_truth euler= " +str(  ground_truth_euler_msgs 	)
-print "  cmd vel msgs      = " +str(  cmd_vel_msgs 	)
-
-print "Process messages ..."
-time_base = -1;
-jnt = 16
-
-
-print "  Process odometry data ..."
-if (odom_msgs):
-    time_odom = [0 for x in xrange(odom_msgs)]
-    x_odom = [0 for x in xrange(odom_msgs)]
-    y_odom = [0 for x in xrange(odom_msgs)]
-    z_odom = [0 for x in xrange(odom_msgs)]
-    pt = 0
-    for topic, msg, t0 in bag.read_messages(topics=base_node +'odom'):
-        if (time_base < 0):
-            time_base = msg.header.stamp.to_sec()
-        time_odom[pt] = (msg.header.stamp.to_sec() - time_base)
-        x_odom[pt]    = msg.pose.pose.position.x
-        y_odom[pt]    = msg.pose.pose.position.y
-        z_odom[pt]    = msg.pose.pose.position.z
-
-        pt = pt + 1
-
-    end_time = min(end_time, max(time_odom))
-    print "Set end time = " +str(end_time)
-
-if (odom_euler_msgs):
-    theta_odom_time = [0 for x in xrange(odom_euler_msgs)]
-    theta_odom = [0 for x in xrange(odom_euler_msgs)]
-    # odom euler
-    pt = 0
-    for topic, msg, t0 in bag.read_messages(topics='/robot_odometry/euler'):
-        theta_odom_time[pt] = (msg.header.stamp.to_sec() - time_base)
-        theta_odom[pt]      = msg.vector.z
-
-        pt = pt + 1
-
-
-if (ground_truth_msgs):
-    time_gnd = [0 for x in xrange(ground_truth_msgs)]
-    x_gnd = [0 for x in xrange(ground_truth_msgs)]
-    y_gnd = [0 for x in xrange(ground_truth_msgs)]
-    z_gnd = [0 for x in xrange(ground_truth_msgs)]
-    # ground truth
-    pt = 0
-    for topic, msg, t0 in bag.read_messages(topics=base_node +'ground_truth'):
-        time_gnd[pt] = (msg.header.stamp.to_sec() - time_base)
-        x_gnd[pt]    = msg.pose.pose.position.x
-        y_gnd[pt]    = msg.pose.pose.position.y
-        z_gnd[pt]    = msg.pose.pose.position.z
-
-        pt = pt + 1
-
-if (ground_truth_euler_msgs):
-    theta_gnd_time = [0 for x in xrange(ground_truth_euler_msgs)]
-    theta_gnd = [0 for x in xrange(ground_truth_euler_msgs)]
-    # ground truth euler
-    pt = 0
-    for topic, msg, t0 in bag.read_messages(topics='/robot_ground_truth/euler'):
-        theta_gnd_time[pt] = (msg.header.stamp.to_sec() - time_base)
-        theta_gnd[pt]      = msg.vector.z
-
-        pt = pt + 1
-
-if (cmd_vel_msgs):
-    time_cmd = [0 for x in xrange(cmd_vel_msgs)]
-    vx_cmd = [0 for x in xrange(cmd_vel_msgs)]
-    wz_cmd = [0 for x in xrange(cmd_vel_msgs)]
-    # cmd vel
-    pt = 0
-    for topic, msg, t0 in bag.read_messages(topics=base_node +'cmd_vel'):
-        time_cmd[pt] = (msg.header.stamp.to_sec() - time_base)
-        vx_cmd[pt]      = msg.twist.linear.x
-        wz_cmd[pt]      = msg.twist.angular.z
-
-        pt = pt + 1
-
-
-print "Close bag!"
-bag.close()
+# Store a tuple of all obstacles
+obstacles = (obj1, obj2, obj3, obj4, obj5, obj6)
 
 
 
+world = grid
+
+#link1.updateTip(np.pi/4.0)
+#link2.updateTip(np.pi/6.0)
 
 
-if (odom_msgs)  :# and ground_truth_msgs):
-    #    print "  Plot odometry vs. ground truth ..."
-    #    fig_odom = plt.figure()
-    #    ax_odom = fig_odom.add_subplot(111, aspect='equal')
-    #    ax_odom.plot(x_gnd,y_gnd,'r', x_odom,y_odom,'b')
-    #    ax_odom.axis([min([min(x_odom), min(x_gnd)])-0.2, max([max(x_odom), max(x_gnd)])+0.2,
-    #                      min([min(y_odom), min(y_gnd)])-0.2, max([max(y_odom), max(y_gnd)])+0.2 ])
-    #    ax_odom.set_ylabel('x')
-    #    ax_odom.set_xlabel('y')
-    #    ax_odom.legend(['ground truth','odometry'])
-    #    fig_odom.suptitle("Path")
-    # elif (odom_msgs ):
-    print "  Plot odometry  ..."
-    fig_odom = plt.figure()
-    ax_odom = fig_odom.add_subplot(111, aspect='equal')
-    ax_odom.plot(x_odom ,y_odom ,'g')
-    ax_odom.axis([min(x_odom ) -0.2, max(x_odom ) +0.2,
-                  min(y_odom ) -0.2, max(y_odom ) +0.2 ])
-    ax_odom.set_ylabel('x')
-    ax_odom.set_xlabel('y')
-    ax_odom.legend(['odometry'])
-    fig_odom.suptitle("Path")
-
-if (ground_truth_msgs):
-    print "  Plot odom frame in ground truth  ..."
-    fig_gnd = plt.figure()
-    ax_gnd = fig_gnd.add_subplot(111, aspect='equal')
-    ax_gnd.plot(x_gnd ,y_gnd ,'g')
-    ax_gnd.axis([min(x_gnd ) -0.2, max(x_gnd ) +0.2,
-                 min(y_gnd ) -0.2, max(y_gnd ) +0.2 ])
-    ax_gnd.set_ylabel('x')
-    ax_gnd.set_xlabel('y')
-    ax_gnd.legend(['ground truth (simulation)'])
-    fig_gnd.suptitle("Displacement")
-
-if (cmd_vel_msgs):
-    print "  Plot commands ..."
-    fig_cmd = plt.figure()
-    ax_cmd = fig_cmd.add_subplot(211)
-    ax_cmd.plot(time_cmd ,vx_cmd ,'r')
-    ax_cmd.axis([min(time_cmd), max(time_cmd),
-                 min(vx_cmd ) -0.005, max(vx_cmd ) +0.005 ])
-    ax_cmd.set_ylabel('m/s')
-    ax_cmd.set_xlabel('time')
-    ax_cmd.legend(['vx_cmd (m/s)'])
-    ax_cmd = fig_cmd.add_subplot(212)
-    ax_cmd.plot(time_cmd ,wz_cmd ,'b')
-    ax_cmd.axis([min(time_cmd), max(time_cmd),
-                 min(wz_cmd ) -0.005, max(wz_cmd ) +0.005 ])
-    ax_cmd.set_ylabel('rad/s')
-    ax_cmd.set_xlabel('time')
-    ax_cmd.legend(['wz_cmd (m/s)'])
-    fig_cmd.suptitle("Commands")
+# Define maximum range for our workspace plots
+max_len = (link1.length + link2.length)*1.5;
 
 
-print "Show plot..."
+# Define a hand specified list of points that work for this simple environment
+pts = [(0.286, -1.04), (0.5, -2.0), (1.0, -2.125), (1.5, -2.25),
+       (1.48, -1.82),  (1.42, -1.42), (1.0, -0.75), (0.75, 1.0), (0.6, 1.5),
+       (0.671, 2.18), (1.5, 2.18), (1.7, 1.8), (1.87, 1.6),
+       (2.012, 1.369), (2.27, 0.0), (2.48, -1.26)]
+
+pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
+pt1 = np.asarray(deepcopy(pts[-1]));# convert tuple to array so we can do math
+
+if (np.array_equal(pt0,pt1)):
+    print "Points are equal"
+else:
+    print "Points are NOT equal"
+
+
+# store angles and color of collision
+collisions_theta1=[]
+collisions_theta2=[]
+collisions_colors=[]
+
+# (x,y) positions of end effector in the workspace
+workspace_x=[]
+workspace_y=[]
+
+# Positions reachable in free C-space
+free_workspace_x=[]
+free_workspace_y=[]
+
+torus=None
+
+# Convert angles to a torus surface in 3D space
+def theta2xyz(t1,t2):
+    return ( (6.*np.cos(t2)*np.cos(t1) + 10.0*np.cos(t1)),
+             (6.*np.cos(t2)*np.sin(t1) + 10.0*np.sin(t1)),
+             (6.*np.sin(t2)))
+
+if (True): # build C-space map
+
+    print "Define the torus ..."
+    pi_diff = np.pi/100.0;#72.0;#36.0
+    thetas = np.arange(-np.pi, np.pi+pi_diff, pi_diff)
+    t1grid,t2grid = np.meshgrid(thetas,thetas)
+
+    torus = theta2xyz(t1grid, t2grid)
+
+
+    print "Now building the C-space map ..."
+    for theta1 in thetas:
+        #print "theta1=",theta1
+        for theta2 in thetas:
+
+            # update the position of the links in the world
+            world.updateRobotArm((theta1,theta2));
+
+            # Store the location of the end effector
+            tip = world.robot.getEndEffector();
+
+            workspace_x.append(tip[0])
+            workspace_y.append(tip[1])
+
+            color = world.checkCollisions()
+            if (color is not None):
+                collisions_theta1.append(theta1)
+                collisions_theta2.append(theta2)
+                collisions_colors.append(color)
+            else:
+                if (theta1 >= 0.0): # just plot the free space on upper half of workspace
+                    free_workspace_x.append(robot.links[-1].tip[0])
+                    free_workspace_y.append(robot.links[-1].tip[1])
+
+
+    print "plot the C-space ..."
+    fig1=plt.figure();
+    ax1=fig1.gca();
+    ax1.grid(True);
+    ax1.set_xlim([-np.pi, np.pi])
+    ax1.set_ylim([-np.pi, np.pi])
+    ax1.set_aspect('equal', 'box');
+
+    print "Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ..."
+    ax1.scatter(collisions_theta1,collisions_theta2,c=collisions_colors,alpha=0.5,edgecolors='none')
+
+
+    if (False):
+      print "Show path on C-space ..."
+      Xp=[];
+      Yp=[];
+      for pt in pts:
+        Xp.append(pt[0])
+        Yp.append(pt[1])
+
+      ax1.plot(Xp,Yp);
+
+      ax1.plot(pts[0][0],pts[0][1],color='g',marker='o');
+      ax1.plot(pts[-1][0],pts[-1][1],color='r',marker='x');
+
+    fig1.savefig( "config_space.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+    if (True):
+        # Draw black (obstacle) and white image for planning
+        fig1=plt.figure();
+        ax1=fig1.gca();
+        ax1.grid(False);
+        ax1.get_xaxis().set_visible(False)
+        ax1.get_yaxis().set_visible(False)
+        ax1.set_xlim([-np.pi, np.pi])
+        ax1.set_ylim([-np.pi, np.pi])
+        ax1.set_aspect('equal', 'box');
+        ax1.axis('off')
+        print "Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ..."
+        ax1.scatter(collisions_theta1,collisions_theta2,c='black',alpha=0.5,edgecolors='none')
+        fig1.savefig( "config_space_bw.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+
+if (True):
+    print "Draw start ..."
+    robot.updateLinks(pts[0])
+    fig2=plt.figure();
+    fig2.suptitle("Start")
+    ax2 = fig2.gca();
+    ax2.grid(True);
+    ax2.set_xlim([-max_len, max_len])
+    ax2.set_ylim([-max_len, max_len])
+    ax2.set_aspect('equal', 'box');
+
+    world.drawWorld(ax2) # Draw robot and obstacles
+    fig2.savefig( "start_position.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+
+if (True):
+    print "Draw finish ..."
+    robot.updateLinks(pts[-1]) # get last point in path list
+
+    fig3=plt.figure();
+    fig3.suptitle("Finish")
+    ax3 = fig3.gca();
+    ax3.grid(True);
+    ax3.set_xlim([-max_len, max_len])
+    ax3.set_ylim([-max_len, max_len])
+    ax3.set_aspect('equal', 'box');
+
+    world.drawWorld(ax3);
+
+    fig3.savefig( "finish_position.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+
+if (True):
+    print "Draw intermediates ..."
+    fig4=plt.figure();
+    fig4.suptitle("Motion")
+    ax4 = fig4.gca();
+    ax4.grid(True);
+    ax4.set_xlim([-max_len, max_len])
+    ax4.set_ylim([-max_len, max_len])
+    ax4.set_aspect('equal', 'box');
+
+    for pt in pts:
+        world.updateRobotArm(pt);
+        robot.drawArm(ax4)
+
+    for obj in obstacles:
+       obj.drawObstacle(ax4)
+    fig4.savefig( "motion_snapshots.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+
+if (True):
+    if (len(workspace_x) > 0): # C-space was built
+        print "Now show the workspace with ",len(workspace_x), " points, and ",len(free_workspace_x)," free points"
+        fig5=plt.figure();
+        fig5.suptitle("Workspace")
+        ax5 = fig5.gca();
+        ax5.grid(True);
+        ax5.set_xlim([-max_len, max_len])
+        ax5.set_ylim([-max_len, max_len])
+        ax5.set_aspect('equal', 'box');
+
+        ax5.scatter(workspace_x,workspace_y,color='b', edgecolors='none')
+
+        ax5.scatter(free_workspace_x,free_workspace_y,color='g',edgecolors='none')
+
+        for obj in obstacles:
+          obj.drawObstacle(ax5)
+        fig5.savefig( "workspace.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+    else:
+        print "No C-space map was built!"
+
+if (torus is not None):
+    print "Draw the torus ..."
+    fig7=plt.figure()
+    ax7 = fig7.add_subplot(111,projection='3d')
+    ax7.plot_surface(torus[0],torus[1],torus[2])
+    ax7.set_xlim([-max_len, max_len])
+    ax7.set_ylim([-max_len, max_len])
+    ax7.set_zlim([-max_len, max_len])
+    ax7.set_aspect('equal', 'box');
+    fig7.savefig( "torus.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+    if (len(collisions_theta1) > 0):
+        print "Draw the torus with collisions ..."
+        fig8=plt.figure()
+        ax8 = fig8.add_subplot(111,projection='3d')
+        ax8.plot_wireframe(torus[0],torus[1],torus[2],alpha=0.5,rstride=4,cstride=4,color='black')
+        ax8.set_xlim([-max_len, max_len])
+        ax8.set_ylim([-max_len, max_len])
+        ax8.set_zlim([-max_len, max_len])
+        ax8.set_aspect('equal', 'box');
+
+        torus_objs = theta2xyz(collisions_theta1, collisions_theta2)
+        ax8.scatter(torus_objs[0], torus_objs[1], torus_objs[2],
+                    c=collisions_colors,alpha=0.5,edgecolors='none')
+
+        fig8.savefig( "torus_obstacles.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+print "Close plots to continue ..."
 plt.show()
+
+
+#print "Done! - comment out the exit below to create images for motion video"
+#sys.exit(0)
+
+print "Make video of motion ..."
+
+fig6=plt.figure();
+fig6.suptitle("Motion")
+ax6 = fig6.gca();
+ax6.grid(True);
+ax6.set_xlim([-max_len, max_len])
+ax6.set_ylim([-max_len, max_len])
+ax6.set_aspect('equal', 'box');
+
+pt0 = np.asarray(deepcopy(pts[0]) )
+robot.updateLinks(pt0);
+robot.drawArm(ax6)
+
+for obj in obstacles:
+   obj.drawObstacle(ax6)
+
+cnt=0;
+
+fig6.savefig( "roboplan_animation_0.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
+
+for pt in pts:
+    pt1 = np.asarray(deepcopy(pt)) # convert tuple to array so we can do math
+    print pt1
+    if (not np.array_equal(pt1,pt0)):
+      for s in np.arange(0.025,1.0,0.025): # interpolate along line from prior point to current
+        pti = pt0 + (pt1-pt0)*s
+        #print pti
+
+        plt.cla()
+        ax6.grid(True);
+        ax6.set_xlim([-max_len, max_len])
+        ax6.set_ylim([-max_len, max_len])
+        ax6.set_aspect('equal', 'box');
+
+        world.updateRobotArm(pti);
+        world.drawWorld(ax6)
+
+        cnt = cnt +1
+
+        fig6.savefig( "roboplan_animation_"+str(cnt)+".png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+
+    pt0 = pt1
+
+print "Done!"
+print ""
+print "In Ubuntu, we can use the following to create an avi video from images:"
+print ""
+print "avconv -r 30 -i roboplan_animation_%d.png -b:v 1000k roboplan.avi"
+print ""
+print "Done!"
