@@ -14,7 +14,7 @@ from imutils import perspective
 from imutils import *
 from cv2 import *
 from argparse import *
-from collections import deque
+from RobotWorld import *
 
 #https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 def midpoint(point1, point2):
@@ -49,17 +49,21 @@ def detectAndDraw(args, image):
     edgeDetection = erode(edgeDetection, None, iterations=1)
 
     contors = findContours(edgeDetection.copy(), RETR_EXTERNAL, CHAIN_APPROX_SIMPLE)
+    if contors is None or len(contors) == 0:
+        raise Exception("No obstacles detected")
     contors = grab_contours(contors)
 
     (contors, _) = contours.sort_contours(contors)
 
     listOfPoints = []
+    obstacleInfo = []
+    counter = 1
     for cnts in contors:
-        contourBoxes(args, image, listOfPoints, cnts)
+        contourBoxes(image, listOfPoints, obstacleInfo, counter, cnts)
+        counter += 1
+    return listOfPoints, obstacleInfo
 
-    return listOfPoints
-
-def contourBoxes(args, image, listOfPoints, cnts):
+def contourBoxes(image, listOfPoints, obstacleInfo, obstacleNum, cnts):
     if contourArea(cnts) < 100:
         return
 
@@ -74,6 +78,13 @@ def contourBoxes(args, image, listOfPoints, cnts):
     x2, y2 = topRight
     x3, y3 = botRight
     x4, y4 = botLeft
+    angle = 0.0
+    width = sqrt( (x2-x1)**2 + (x2-x1)**2 )
+    height = sqrt( (x3-x2)**2 + (x3-x2)**2 )
+
+    obstacle = Obstacle(("Obstacle ", obstacleNum), botLeft, width, height, (255, 150, 230), angle=angle)
+    obstacleInfo.append(obstacle)
+
     listOfPoints.append(getLine(x1, y1, x2, y2))
     listOfPoints.append(getLine(x2, y2, x3, y3))
     listOfPoints.append(getLine(x3, y3, x4, y4))
