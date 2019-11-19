@@ -10,13 +10,13 @@ import BlobDetection
 '''
 
 '''
-This function takes the list of obstacle points collected by BlobDetection and 
+This function takes the list of obstacle points collected by BlobDetection and
 creates a list of boolean values. This list will assign a spot as false if there is an obstacle
-there, and be true otherwise. This list will then be passed to the path planning function. 
+there, and be true otherwise. This list will then be passed to the path planning function.
 '''
 def convertObjects():
     args, image = BlobDetection.takePhoto()
-    listOfObjects, obstacleInfo = BlobDetection.detectAndDraw(args, image)
+    listOfObjects, obstacleInfo, boxPointsList = BlobDetection.detectAndDraw(args, image)
     imageList = np.array(image, dtype='float')
 
     width = len(imageList)

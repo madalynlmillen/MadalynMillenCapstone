@@ -156,7 +156,7 @@ if (True): # build C-space map
       ax1.plot(pts[0][0],pts[0][1],color='g',marker='o');
       ax1.plot(pts[-1][0],pts[-1][1],color='r',marker='x');
 
-    fig1.savefig( "animation\\config_space.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+    fig1.savefig( "animation/config_space.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
     if (True):
         # Draw black (obstacle) and white image for planning
@@ -171,7 +171,7 @@ if (True): # build C-space map
         ax1.axis('off')
         print "Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ..."
         ax1.scatter(collisions_theta1,collisions_theta2,c='black',alpha=0.5,edgecolors='none')
-        fig1.savefig( "animation\\config_space_bw.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+        fig1.savefig( "animation/config_space_bw.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
 
 if (True):
@@ -186,7 +186,7 @@ if (True):
     ax2.set_aspect('equal', 'box');
 
     world.drawWorld(ax2) # Draw robot and obstacles
-    fig2.savefig( "animation\\start_position.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+    fig2.savefig( "animation/start_position.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
 
 if (True):
@@ -203,7 +203,7 @@ if (True):
 
     world.drawWorld(ax3);
 
-    fig3.savefig( "animation\\finish_position.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+    fig3.savefig( "animation/finish_position.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
 
 if (True):
@@ -222,7 +222,7 @@ if (True):
 
     for obj in obstacles:
        obj.drawObstacle(ax4)
-    fig4.savefig( "animation\\motion_snapshots.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+    fig4.savefig( "animation/motion_snapshots.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
 
 if (True):
@@ -242,7 +242,7 @@ if (True):
 
         for obj in obstacles:
           obj.drawObstacle(ax5)
-        fig5.savefig( "animation\\workspace.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+        fig5.savefig( "animation/workspace.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
     else:
         print "No C-space map was built!"
@@ -256,7 +256,7 @@ if (torus is not None):
     ax7.set_ylim([-max_len, max_len])
     ax7.set_zlim([-max_len, max_len])
     ax7.set_aspect('equal', 'box');
-    fig7.savefig( "animation\\torus.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+    fig7.savefig( "animation/torus.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
     if (len(collisions_theta1) > 0):
         print "Draw the torus with collisions ..."
@@ -272,7 +272,7 @@ if (torus is not None):
         ax8.scatter(torus_objs[0], torus_objs[1], torus_objs[2],
                     c=collisions_colors,alpha=0.5,edgecolors='none')
 
-        fig8.savefig( "animation\\torus_obstacles.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+        fig8.savefig( "animation/torus_obstacles.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
 print "Close plots to continue ..."
 plt.show()
@@ -300,7 +300,7 @@ for obj in obstacles:
 
 cnt=0;
 
-fig6.savefig( "animation\\roboplan_animation_0.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+fig6.savefig( "animation/roboplan_animation_0.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
 pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
 
@@ -323,7 +323,7 @@ for pt in pts:
 
         cnt = cnt +1
 
-        fig6.savefig( "animation\\roboplan_animation_"+str(cnt)+".png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
+        fig6.savefig( "animation/roboplan_animation_"+str(cnt)+".png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
     pt0 = pt1
 

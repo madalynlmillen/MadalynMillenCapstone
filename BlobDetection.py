@@ -57,13 +57,14 @@ def detectAndDraw(args, image):
 
     listOfPoints = []
     obstacleInfo = []
+    boxPointsList
     counter = 1
     for cnts in contors:
-        contourBoxes(image, listOfPoints, obstacleInfo, counter, cnts)
+        contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, counter, cnts)
         counter += 1
-    return listOfPoints, obstacleInfo
+    return listOfPoints, obstacleInfo, boxPointsList
 
-def contourBoxes(image, listOfPoints, obstacleInfo, obstacleNum, cnts):
+def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, cnts):
     if contourArea(cnts) < 100:
         return
 
@@ -73,6 +74,7 @@ def contourBoxes(image, listOfPoints, obstacleInfo, obstacleNum, cnts):
     box = np.array(box, dtype="int")
 
     box = perspective.order_points(box)
+    boxPointsList.append(box)
     (topLeft, topRight, botRight, botLeft) = box
     x1, y1 = topLeft
     x2, y2 = topRight
@@ -83,7 +85,7 @@ def contourBoxes(image, listOfPoints, obstacleInfo, obstacleNum, cnts):
     height = sqrt( (x3-x2)**2 + (x3-x2)**2 )
     color = '#ff7f0e'
 
-    obstacle = Obstacle(("Obstacle ", obstacleNum), botLeft, width[0], height[0], color, angle=angle)
+    obstacle = [("Obstacle ", obstacleNum), botLeft, width[0], height[0], color, angle)]
     obstacleInfo.append(obstacle)
 
     listOfPoints.append(getLine(x1, y1, x2, y2))
