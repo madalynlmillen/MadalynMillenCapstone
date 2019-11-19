@@ -123,13 +123,13 @@ class RobotArm:
             # Against all links
             for link in self.links:
 
-                # Vector from link base to object lowerLeft
+                # Vector from link base to object lowerleft
                 dX = ( (obj.lowerLeft[0] - link.base[0]), (obj.lowerLeft[1] - link.base[1]) )
 
                 dist = dX[0]*link.normal[0] + dX[1]*link.normal[1]
-
+                val = np.fabs(dist)
                 # check distance from obstacle lowerLeft to line along a link
-                if (np.fabs(dist) < (link.width/2.0 + obj.lowerLeft)):
+                if (val < (link.width/2.0 + obj.width/2.0)):
                     #print "potential collision"
 
                     # Calculate the projection of vector to obstacle along the link
@@ -170,7 +170,6 @@ class Obstacle:
         self.angle = angle
 
     def drawObstacle(self,ax2):
-
         ax2.add_patch(patches.Rectangle(self.lowerLeft,self.width, self.height, angle=self.angle, color=self.color));
 
 

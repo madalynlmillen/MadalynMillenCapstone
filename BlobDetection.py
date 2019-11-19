@@ -8,7 +8,7 @@
 ' Make sure to install imutils (pip install imutils) for object detector
 '''
 import numpy as np
-from scipy.spatial import distance as dist
+import math
 from imutils import contours
 from imutils import perspective
 from imutils import *
@@ -78,11 +78,12 @@ def contourBoxes(image, listOfPoints, obstacleInfo, obstacleNum, cnts):
     x2, y2 = topRight
     x3, y3 = botRight
     x4, y4 = botLeft
-    angle = 0.0
+    angle = math.atan((y1-y2)/(x2-x1))*180/math.pi #https://pdnotebook.com/measuring-angles-in-opencv-2f0551b8dd5a
     width = sqrt( (x2-x1)**2 + (x2-x1)**2 )
     height = sqrt( (x3-x2)**2 + (x3-x2)**2 )
+    color = '#ff7f0e'
 
-    obstacle = Obstacle(("Obstacle ", obstacleNum), botLeft, width, height, (255, 150, 230), angle=angle)
+    obstacle = Obstacle(("Obstacle ", obstacleNum), botLeft, width[0], height[0], color, angle=angle)
     obstacleInfo.append(obstacle)
 
     listOfPoints.append(getLine(x1, y1, x2, y2))
