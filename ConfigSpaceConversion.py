@@ -30,6 +30,7 @@ def convertObjects():
             a,b = pair
             imageBoolList[int(b)][int(a)] = False
             newSpaceImage[int(b)][int(a)] = [255, 255, 255]
+            print pair
 
     #This image is created from the boolean list to show where the obstacles are
     newSpaceImage = Image.fromarray(newSpaceImage, 'RGB')
