@@ -57,7 +57,7 @@ def detectAndDraw(args, image):
 
     listOfPoints = []
     obstacleInfo = []
-    boxPointsList
+    boxPointsList = []
     counter = 1
     for cnts in contors:
         contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, counter, cnts)
@@ -85,7 +85,7 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     height = sqrt( (x3-x2)**2 + (x3-x2)**2 )
     color = '#ff7f0e'
 
-    obstacle = [("Obstacle ", obstacleNum), botLeft, width[0], height[0], color, angle)]
+    obstacle = [("Obstacle ", obstacleNum), botLeft, width[0], height[0], color, angle]
     obstacleInfo.append(obstacle)
 
     listOfPoints.append(getLine(x1, y1, x2, y2))
