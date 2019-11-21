@@ -36,7 +36,6 @@ def convertObjects():
             a,b = pair
             imageBoolList[int(b)][int(a)] = False
             newSpaceImage[int(b)][int(a)] = [255, 255, 255]
-            print pair
 
     #This image is created from the boolean list to show where the obstacles are
     newSpaceImage = Image.fromarray(newSpaceImage, 'RGB')
@@ -193,6 +192,15 @@ def convertObjects():
             ax1.scatter(collisions_theta1,collisions_theta2,c='black',alpha=0.5,edgecolors='none')
             fig1.savefig( "animation/config_space_bw.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
     # Define a hand specified list of points that work for this simple environment
+    pts = [(0.286, -1.04), (0.5, -2.0), (1.0, -2.125), (1.5, -2.25),
+       (1.48, -1.82),  (1.42, -1.42), (1.0, -0.75), (0.75, 1.0), (0.6, 1.5),
+       (0.671, 2.18), (1.5, 2.18), (1.7, 1.8), (1.87, 1.6),
+       (2.012, 1.369), (2.27, 0.0), (2.48, -1.26)]
+
+    pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
+    pt1 = np.asarray(deepcopy(pts[-1]));# convert tuple to array so we can do math
+    print pts[0], " ", pts[-1]
+
     pts = PathPlanning.fullPath()
 
     pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
@@ -355,5 +363,6 @@ def convertObjects():
 
         pt0 = pt1
     print "Done!"
+    return
 
 convertObjects()

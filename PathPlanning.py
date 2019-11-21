@@ -246,26 +246,26 @@ def fullPath():
     print "Doing the search ..."
     grid = UndirectedGraph()  # Using Russell and Norvig code
 
-    start=(4,4)
-    goal=(28,24)
+    start=(2,4)
+    goal=(6,8)
 
 
     # Define the test cases we want to run
     tests = [("depth_first_",  depth_first_graph_search),
              ("breadth_first_",breadth_first_search),
-             ("uniform_cost_", uniform_cost_search),
-             ("astar_search_euclid_",    astar_search,0),
+             ("uniform_cost_", uniform_cost_search)]
+    '''("astar_search_euclid_",    astar_search,0),
              ("astar_search_euclid2_",   astar_search,4),
              ("astar_search_euclid3_",   astar_search,5),
              ("astar_search_euclid025_", astar_search,6),
              ("astar_search_euclid05_",  astar_search,7),
              ("astar_search_dx_",        astar_search,1),
              ("astar_search_dy_",        astar_search,2),
-             ("astar_search_manhattan_", astar_search,3)''',
+             ("astar_search_manhattan_", astar_search,3),
              ("greedy_search_euclid_",   greedy_best_first_graph_search,0),
              ("greedy_search_dx_",       greedy_best_first_graph_search,1),
              ("greedy_search_dy_",       greedy_best_first_graph_search,2),
-             ("greedy_search_manhattan_",greedy_best_first_graph_search,3)  ''' ]
+             ("greedy_search_manhattan_",greedy_best_first_graph_search,3)  ]'''
     paths = []
     smallPath = []
     smallestPath = float('inf')
@@ -343,5 +343,6 @@ def fullPath():
         problem2.video_encoder.release()
 
         waitKey(500)
-    paths.append(smallPath)
+    for p in smallPath:
+        paths.append((p.state[0], p.state[1]))
     return paths
