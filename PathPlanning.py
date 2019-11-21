@@ -16,7 +16,7 @@ from color_map import color_map
 from video_encoder import VideoEncoder
 from map_loader import MapLoader
 
-grid, obstacleInfo = ConfigSpaceConversion.convertObjects()
+_, obstacleInfo = ConfigSpaceConversion.convertObjects()
 
 #code below adapted from CNURobotics at https://github.com/CNURobotics/arm_planning_2d/blob/master/roboplan.py
 '''

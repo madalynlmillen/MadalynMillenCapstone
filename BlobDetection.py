@@ -15,6 +15,9 @@ from imutils import *
 from cv2 import *
 from argparse import *
 from RobotWorld import *
+import sys
+sys.path.append("C:\Users\madal\PycharmProjects\MadalynMillenCapstone\\vision_opencv-melodic\image_geometry\src\image_geometry")
+from cameramodels import *
 
 #https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 def midpoint(point1, point2):
@@ -54,7 +57,7 @@ def detectAndDraw(args, image):
     contors = grab_contours(contors)
 
     (contors, _) = contours.sort_contours(contors)
-
+    newImage = None
     listOfPoints = []
     obstacleInfo = []
     boxPointsList = []
@@ -76,6 +79,12 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     box = perspective.order_points(box)
     boxPointsList.append(box)
     (topLeft, topRight, botRight, botLeft) = box
+    newPoints = np.array(newPoints, dtype="int")
+    for point in box:
+        rectified = rectifyPoint(point)
+        newPoints.append(projectPixelTo3dRay(rectified))
+    newPoints = np.array(newPoints, dtype="int")
+    (topLeft, topRight, botRight, botLeft) = newPoints
     x1, y1 = topLeft
     x2, y2 = topRight
     x3, y3 = botRight
@@ -85,7 +94,7 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     height = sqrt( (x3-x2)**2 + (x3-x2)**2 )
     color = '#ff7f0e'
 
-    obstacle = [("Obstacle ", obstacleNum), botLeft, width[0], height[0], color, angle]
+    obstacle = Obstacle("Obstacle " + str(obstacleNum), botLeft, width[0], height[0], color, angle)
     obstacleInfo.append(obstacle)
 
     listOfPoints.append(getLine(x1, y1, x2, y2))
