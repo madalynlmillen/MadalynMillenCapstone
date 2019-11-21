@@ -16,7 +16,7 @@ from cv2 import *
 from argparse import *
 from RobotWorld import *
 import sys
-sys.path.append("C:\Users\madal\PycharmProjects\MadalynMillenCapstone\\vision_opencv-melodic\image_geometry\src\image_geometry")
+sys.path.append("/home/kinova/MillenCapstone/MadalynMillenCapstone/vision_opencv-melodic/image_geometry/src/image_geometry")
 from cameramodels import *
 
 #https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
@@ -32,6 +32,8 @@ def takePhoto():
     args = vars(argpar.parse_args())
     #https://stackoverflow.com/questions/11094481/capturing-a-single-image-from-my-webcam-in-java-or-python
     camera = VideoCapture(0)
+    '''cameraModel = PinholeCameraModel()
+    cameraModel.fromCameraInfo()'''
     saved, image = camera.read()
     if saved:
         namedWindow("Camera")
@@ -79,12 +81,11 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     box = perspective.order_points(box)
     boxPointsList.append(box)
     (topLeft, topRight, botRight, botLeft) = box
-    newPoints = np.array(newPoints, dtype="int")
+    '''newPoints = []
     for point in box:
-        rectified = rectifyPoint(point)
-        newPoints.append(projectPixelTo3dRay(rectified))
-    newPoints = np.array(newPoints, dtype="int")
-    (topLeft, topRight, botRight, botLeft) = newPoints
+        rectified = cameraModel.rectifyPoint(point)
+        newPoints.append(cameraModel.projectPixelTo3dRay(rectified))
+    newPoints = np.array(newPoints, dtype="int")'''
     x1, y1 = topLeft
     x2, y2 = topRight
     x3, y3 = botRight
