@@ -1,0 +1,8 @@
+prefix=/home/kinova/MillenCapstone/MadalynMillenCapstone/install
+
+Name: usb_cam
+Description: Description of usb_cam
+Version: 0.3.6
+Cflags: -I/home/kinova/MillenCapstone/MadalynMillenCapstone/install/include
+Libs: -L/home/kinova/MillenCapstone/MadalynMillenCapstone/install/lib -lusb_cam
+Requires: 

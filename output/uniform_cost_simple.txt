@@ -1,4 +1,4 @@
-expansions = 70
-max frontier = 25
+expansions = 67
+max frontier = 24
 path cost=12
 Path=[<Node (2, 4)>, <Node (3, 5)>, <Node (4, 6)>, <Node (5, 7)>, <Node (6, 8)>]

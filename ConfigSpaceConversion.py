@@ -11,7 +11,7 @@ import sys
 from RobotWorld import *
 import os.path
 import PathPlanning
-import hebi
+#import hebi
 from time import sleep, time
 '''
 #Code inspired by https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
@@ -363,7 +363,7 @@ def convertObjects():
     print "Done!"
     return pts
 #https://github.com/HebiRobotics/hebi-python-examples/blob/master/basic/05_trajectory.py
-lookup = hebi.lookup()
+'''lookup = hebi.lookup()
 
 sleep(2.0)
 
@@ -386,11 +386,11 @@ if group.get_next_feedback(reuse_fbk=group_feedback) is None:
 
 positions = np.zeros((num_joints, 3), dtype=np.float64)
 offset = [pi] * num_joints
-current_pos = group_feedback.position
+current_pos = group_feedback.position'''
 
 positions = convertObjects()
 
-time_vector = []
+'''time_vector = []
 starttime = 0
 steps = len(positions) / 60.0
 for pt in positions:
@@ -418,4 +418,5 @@ while t < duration:
   group_command.velocity = vel
   group.send_command(group_command)
 
-group.stop_log()
+group.stop_log()'''
+exit()
