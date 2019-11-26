@@ -16,6 +16,9 @@ from cv2 import *
 from argparse import *
 from RobotWorld import *
 import sys
+from sensor_msgs.msg import CameraInfo
+sys.path.append("/home/kinova/MillenCapstone/MadalynMillenCapstone/vision_opencv-melodic/image_geometry/src/image_geometry")
+import cameramodels
 
 #https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 def midpoint(point1, point2):
@@ -30,8 +33,8 @@ def takePhoto():
     args = vars(argpar.parse_args())
     #https://stackoverflow.com/questions/11094481/capturing-a-single-image-from-my-webcam-in-java-or-python
     camera = VideoCapture(0)
-    '''cameraModel = PinholeCameraModel()
-    cameraModel.fromCameraInfo()'''
+    '''cameraModel = cameramodels.PinholeCameraModel()
+    cameraInfo = cameraModel.fromCameraInfo(CameraInfo())'''
     saved, image = camera.read()
     if saved:
         namedWindow("Camera")
@@ -41,7 +44,9 @@ def takePhoto():
             raise Exception("Could not write image")
         camera.release()
     image = imread(args["image"])
-    return args, image
+    '''newImage = imread(args["image"])
+    cameraModel.rectifyImage(image, newImage)'''
+    return args, image #newImage
 
 def detectAndDraw(args, image):
     color = cvtColor(image, COLOR_BGR2GRAY)
@@ -79,11 +84,14 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     box = perspective.order_points(box)
     boxPointsList.append(box)
     (topLeft, topRight, botRight, botLeft) = box
-    '''newPoints = []
+    newPoints = []
+    cameraModel = cameramodels.PinholeCameraModel()
+    cameraModel.fromCameraInfo(CameraInfo())
     for point in box:
-        rectified = cameraModel.rectifyPoint(point)
-        newPoints.append(cameraModel.projectPixelTo3dRay(rectified))
-    newPoints = np.array(newPoints, dtype="int")'''
+        newPoint = cameraModel.rectifyPoint(point)
+        print newPoint
+        newPoints.append(newPoint)
+    #newPoints = np.array(newPoints, dtype="int")
     x1, y1 = topLeft
     x2, y2 = topRight
     x3, y3 = botRight

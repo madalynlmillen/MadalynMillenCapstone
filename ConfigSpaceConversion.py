@@ -11,7 +11,7 @@ import sys
 from RobotWorld import *
 import os.path
 import PathPlanning
-#import hebi
+import hebi
 from time import sleep, time
 '''
 #Code inspired by https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
@@ -36,8 +36,8 @@ def convertObjects():
     for j in listOfObjects:
         for pair in j:
             a,b = pair
-            imageBoolList[int(b)][int(a)] = False
-            newSpaceImage[int(b)][int(a)] = [255, 255, 255]
+            #imageBoolList[int(b)][int(a)] = False
+            #newSpaceImage[int(b)][int(a)] = [255, 255, 255]
 
     #This image is created from the boolean list to show where the obstacles are
     newSpaceImage = Image.fromarray(newSpaceImage, 'RGB')
@@ -200,7 +200,7 @@ def convertObjects():
        (2.012, 1.369), (2.27, 0.0), (2.48, -1.26)]
 
     pts = PathPlanning.fullPath()
-
+    
     pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
     pt1 = np.asarray(deepcopy(pts[-1]));# convert tuple to array so we can do math
 
@@ -247,8 +247,8 @@ def convertObjects():
         fig4.suptitle("Motion")
         ax4 = fig4.gca();
         ax4.grid(True);
-        ax4.set_xlim([-max_len, max_len])
-        ax4.set_ylim([-max_len, max_len])
+        ax4.set_xlim([0, max_len])
+        ax4.set_ylim([0, max_len])
         ax4.set_aspect('equal', 'box');
 
         for pt in pts:
@@ -389,8 +389,8 @@ offset = [pi] * num_joints
 current_pos = group_feedback.position'''
 
 positions = convertObjects()
-
-'''time_vector = []
+'''
+time_vector = []
 starttime = 0
 steps = len(positions) / 60.0
 for pt in positions:
