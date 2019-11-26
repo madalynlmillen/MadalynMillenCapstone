@@ -11,6 +11,8 @@ import sys
 from RobotWorld import *
 import os.path
 import PathPlanning
+import hebi
+from time import sleep, time
 '''
 #Code inspired by https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
 '''
@@ -197,10 +199,6 @@ def convertObjects():
        (0.671, 2.18), (1.5, 2.18), (1.7, 1.8), (1.87, 1.6),
        (2.012, 1.369), (2.27, 0.0), (2.48, -1.26)]
 
-    pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
-    pt1 = np.asarray(deepcopy(pts[-1]));# convert tuple to array so we can do math
-    print pts[0], " ", pts[-1]
-
     pts = PathPlanning.fullPath()
 
     pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
@@ -363,6 +361,61 @@ def convertObjects():
 
         pt0 = pt1
     print "Done!"
-    return
+    return pts
+#https://github.com/HebiRobotics/hebi-python-examples/blob/master/basic/05_trajectory.py
+lookup = hebi.lookup()
 
-convertObjects()
+sleep(2.0)
+
+family_name = "Test Family"
+module_name = "Test Actuator"
+
+group = lookup.get_group_from_names([family_name], [module_name])
+
+if group is None:
+  print('Group not found! Check that the family and name of a module on the network')
+  print('matches what is given in the source file.')
+  exit(1)
+
+num_joints = group.size
+group_feedback = hebi.GroupFeedback(num_joints)
+
+if group.get_next_feedback(reuse_fbk=group_feedback) is None:
+  print('Error getting feedback.')
+  exit(1)
+
+positions = np.zeros((num_joints, 3), dtype=np.float64)
+offset = [pi] * num_joints
+current_pos = group_feedback.position
+
+positions = convertObjects()
+
+time_vector = []
+starttime = 0
+steps = len(positions) / 60.0
+for pt in positions:
+    timevector.append((starttime))
+    starttime = starttime + steps
+
+trajectory = hebi.trajectory.create_trajectory(time_vector, positions)
+
+# Start logging in the background
+group.start_log('logs')
+
+group_command = hebi.GroupCommand(num_joints)
+duration = trajectory.duration
+
+start = time()
+t = time() - start
+
+while t < duration:
+  # Serves to rate limit the loop without calling sleep
+  group.get_next_feedback(reuse_fbk=group_feedback)
+  t = time() - start
+
+  pos, vel, acc = trajectory.get_state(t)
+  group_command.position = pos
+  group_command.velocity = vel
+  group.send_command(group_command)
+
+group.stop_log()

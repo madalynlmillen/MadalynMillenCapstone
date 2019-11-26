@@ -1,8 +1,8 @@
-# Install script for directory: /home/kinova/MillenCapstone/catkin_ws/src
+# Install script for directory: /home/kinova/MillenCapstone/MadalynMillenCapstone/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/kinova/MillenCapstone/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/kinova/MillenCapstone/MadalynMillenCapstone/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -44,95 +44,80 @@ endif()
 
 if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/kinova/MillenCapstone/catkin_ws/install/_setup_util.py")
+   "/home/kinova/MillenCapstone/MadalynMillenCapstone/install/_setup_util.py")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/kinova/MillenCapstone/catkin_ws/install" TYPE PROGRAM FILES "/home/kinova/MillenCapstone/catkin_ws/build/catkin_generated/installspace/_setup_util.py")
+file(INSTALL DESTINATION "/home/kinova/MillenCapstone/MadalynMillenCapstone/install" TYPE PROGRAM FILES "/home/kinova/MillenCapstone/MadalynMillenCapstone/build/catkin_generated/installspace/_setup_util.py")
 endif()
 
 if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/kinova/MillenCapstone/catkin_ws/install/env.sh")
+   "/home/kinova/MillenCapstone/MadalynMillenCapstone/install/env.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/kinova/MillenCapstone/catkin_ws/install" TYPE PROGRAM FILES "/home/kinova/MillenCapstone/catkin_ws/build/catkin_generated/installspace/env.sh")
+file(INSTALL DESTINATION "/home/kinova/MillenCapstone/MadalynMillenCapstone/install" TYPE PROGRAM FILES "/home/kinova/MillenCapstone/MadalynMillenCapstone/build/catkin_generated/installspace/env.sh")
 endif()
 
 if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/kinova/MillenCapstone/catkin_ws/install/setup.bash")
+   "/home/kinova/MillenCapstone/MadalynMillenCapstone/install/setup.bash")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/kinova/MillenCapstone/catkin_ws/install" TYPE FILE FILES "/home/kinova/MillenCapstone/catkin_ws/build/catkin_generated/installspace/setup.bash")
+file(INSTALL DESTINATION "/home/kinova/MillenCapstone/MadalynMillenCapstone/install" TYPE FILE FILES "/home/kinova/MillenCapstone/MadalynMillenCapstone/build/catkin_generated/installspace/setup.bash")
 endif()
 
 if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/kinova/MillenCapstone/catkin_ws/install/setup.sh")
+   "/home/kinova/MillenCapstone/MadalynMillenCapstone/install/setup.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/kinova/MillenCapstone/catkin_ws/install" TYPE FILE FILES "/home/kinova/MillenCapstone/catkin_ws/build/catkin_generated/installspace/setup.sh")
+file(INSTALL DESTINATION "/home/kinova/MillenCapstone/MadalynMillenCapstone/install" TYPE FILE FILES "/home/kinova/MillenCapstone/MadalynMillenCapstone/build/catkin_generated/installspace/setup.sh")
 endif()
 
 if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/kinova/MillenCapstone/catkin_ws/install/setup.zsh")
+   "/home/kinova/MillenCapstone/MadalynMillenCapstone/install/setup.zsh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/kinova/MillenCapstone/catkin_ws/install" TYPE FILE FILES "/home/kinova/MillenCapstone/catkin_ws/build/catkin_generated/installspace/setup.zsh")
+file(INSTALL DESTINATION "/home/kinova/MillenCapstone/MadalynMillenCapstone/install" TYPE FILE FILES "/home/kinova/MillenCapstone/MadalynMillenCapstone/build/catkin_generated/installspace/setup.zsh")
 endif()
 
 if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/kinova/MillenCapstone/catkin_ws/install/.rosinstall")
+   "/home/kinova/MillenCapstone/MadalynMillenCapstone/install/.rosinstall")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/kinova/MillenCapstone/catkin_ws/install" TYPE FILE FILES "/home/kinova/MillenCapstone/catkin_ws/build/catkin_generated/installspace/.rosinstall")
+file(INSTALL DESTINATION "/home/kinova/MillenCapstone/MadalynMillenCapstone/install" TYPE FILE FILES "/home/kinova/MillenCapstone/MadalynMillenCapstone/build/catkin_generated/installspace/.rosinstall")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/kinova/MillenCapstone/catkin_ws/build/gtest/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_bringup/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_control/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_gazebo/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_msgs/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_driver/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_demo/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/inverse_kinematics_plugins/ikfast/j2n6s300_ikfast/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/inverse_kinematics_plugins/ikfast/j2s6s300_ikfast/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/inverse_kinematics_plugins/ikfast/j2s7s300_ikfast/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/inverse_kinematics_plugins/ikfast/m1n6s300_ikfast/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/kinova_arm_moveit_demo/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_description/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/robot_configs/j2n6s300_moveit_config/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/robot_configs/j2s6s300_moveit_config/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/robot_configs/j2s7s300_moveit_config/cmake_install.cmake")
-  include("/home/kinova/MillenCapstone/catkin_ws/build/kinova-ros/kinova_moveit/robot_configs/m1n6s300_moveit_config/cmake_install.cmake")
+  include("/home/kinova/MillenCapstone/MadalynMillenCapstone/build/gtest/cmake_install.cmake")
+  include("/home/kinova/MillenCapstone/MadalynMillenCapstone/build/camera_info_manager_py/cmake_install.cmake")
 
 endif()
 
@@ -144,5 +129,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/kinova/MillenCapstone/catkin_ws/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/kinova/MillenCapstone/MadalynMillenCapstone/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

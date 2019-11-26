@@ -16,8 +16,6 @@ from cv2 import *
 from argparse import *
 from RobotWorld import *
 import sys
-sys.path.append("/home/kinova/MillenCapstone/MadalynMillenCapstone/vision_opencv-melodic/image_geometry/src/image_geometry")
-from cameramodels import *
 
 #https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 def midpoint(point1, point2):
