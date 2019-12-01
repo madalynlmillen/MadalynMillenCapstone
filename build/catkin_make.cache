@@ -1,2 +1,2 @@
-camera_info_manager_py
+camera_info_manager_py:usb_cam
 -DCATKIN_DEVEL_PREFIX=/home/kinova/MillenCapstone/MadalynMillenCapstone/devel -DCMAKE_INSTALL_PREFIX=/home/kinova/MillenCapstone/MadalynMillenCapstone/install -G Unix Makefiles

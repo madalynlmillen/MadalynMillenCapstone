@@ -1,3 +1,4 @@
-expansions = 1
-max frontier = 1
-no path!
+expansions = 61
+max frontier = 29
+path cost=18
+Path=[<Node (2, 2)>, <Node (1, 3)>, <Node (2, 4)>, <Node (3, 5)>, <Node (4, 6)>, <Node (5, 7)>, <Node (6, 8)>]

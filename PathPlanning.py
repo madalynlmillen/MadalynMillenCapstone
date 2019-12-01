@@ -246,7 +246,7 @@ def fullPath():
     print "Doing the search ..."
     grid = UndirectedGraph()  # Using Russell and Norvig code
 
-    start=(2,4)
+    start=(2,2)
     goal=(6,8)
 
 

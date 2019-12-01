@@ -85,14 +85,14 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     boxPointsList.append(box)
     (topLeft, topRight, botRight, botLeft) = box
     newPoints = []
-    cameraModel = cameramodels.PinholeCameraModel()
+    '''cameraModel = cameramodels.PinholeCameraModel()
     cameraModel.fromCameraInfo(CameraInfo())
     for point in box:
         newPoint = cameraModel.rectifyPoint(point)
         print newPoint
         newPoints.append(newPoint)
-    #newPoints = np.array(newPoints, dtype="int")
-    x1, y1 = topLeft
+    #newPoints = np.array(newPoints, dtype="int")'''
+    x1, y1 = topLeft 
     x2, y2 = topRight
     x3, y3 = botRight
     x4, y4 = botLeft

@@ -7,12 +7,12 @@ from copy import deepcopy
 from mpl_toolkits.mplot3d import Axes3D
 import ConfigSpaceConversion
 import matplotlib.pyplot as plt
-import sys
 from RobotWorld import *
 import os.path
 import PathPlanning
 import hebi
 from time import sleep, time
+import math
 '''
 #Code inspired by https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
 '''
@@ -36,8 +36,9 @@ def convertObjects():
     for j in listOfObjects:
         for pair in j:
             a,b = pair
-            #imageBoolList[int(b)][int(a)] = False
-            #newSpaceImage[int(b)][int(a)] = [255, 255, 255]
+            if b < width and a < height:
+                imageBoolList[int(b)][int(a)] = False
+                newSpaceImage[int(b)][int(a)] = [255, 255, 255]
 
     #This image is created from the boolean list to show where the obstacles are
     newSpaceImage = Image.fromarray(newSpaceImage, 'RGB')
@@ -79,7 +80,7 @@ def convertObjects():
 
     # Define a robot with tuple of links (2 in this case but could add more)
     robot = RobotArm((link1, link2))
-    robot.updateLinks((np.pi/4.0, -np.pi/6.0)) # Define the initial angles
+    robot.updateLinks((-1.49, 3.142)) # Define the initial angles
 
     obstacles = []
     counter = 1
@@ -119,7 +120,7 @@ def convertObjects():
 
     if (True): # build C-space map
 
-        print "Define the torus ..."
+        print ("Define the torus ...")
         pi_diff = np.pi/100.0;#72.0;#36.0
         thetas = np.arange(-np.pi, np.pi+pi_diff, pi_diff)
         t1grid,t2grid = np.meshgrid(thetas,thetas)
@@ -127,7 +128,7 @@ def convertObjects():
         torus = theta2xyz(t1grid, t2grid)
 
 
-        print "Now building the C-space map ..."
+        print ("Now building the C-space map ...")
         for theta1 in thetas:
             #print "theta1=",theta1
             for theta2 in thetas:
@@ -152,20 +153,20 @@ def convertObjects():
                         free_workspace_y.append(robot.links[-1].tip[1])
 
 
-        print "plot the C-space ..."
+        print ("plot the C-space ...")
         fig1=plt.figure();
-        ax1=fig1.gca();
+        ax1=fig1.gca(projection='3d');
         ax1.grid(True);
         ax1.set_xlim([-np.pi, np.pi])
         ax1.set_ylim([-np.pi, np.pi])
         ax1.set_aspect('equal', 'box');
 
-        print "Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ..."
+        print ("Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ...")
         ax1.scatter(collisions_theta1,collisions_theta2,c=collisions_colors,alpha=0.5,edgecolors='none')
 
 
         if (False):
-          print "Show path on C-space ..."
+          print ("Show path on C-space ...")
           Xp=[];
           Yp=[];
           for pt in pts:
@@ -190,7 +191,7 @@ def convertObjects():
             ax1.set_ylim([-np.pi, np.pi])
             ax1.set_aspect('equal', 'box');
             ax1.axis('off')
-            print "Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ..."
+            print( "Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ...")
             ax1.scatter(collisions_theta1,collisions_theta2,c='black',alpha=0.5,edgecolors='none')
             fig1.savefig( "animation/config_space_bw.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
     # Define a hand specified list of points that work for this simple environment
@@ -199,18 +200,22 @@ def convertObjects():
        (0.671, 2.18), (1.5, 2.18), (1.7, 1.8), (1.87, 1.6),
        (2.012, 1.369), (2.27, 0.0), (2.48, -1.26)]
 
-    pts = PathPlanning.fullPath()
-    
+    pts = PathPlanning.fullPath() #takes obstacle info and tries to find a path for the arm
+
+    if len(pts) == 0: #prevents an exception from being thrown if no path is found
+        print ("No path was found.")
+        return None
+
     pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
     pt1 = np.asarray(deepcopy(pts[-1]));# convert tuple to array so we can do math
 
     if (np.array_equal(pt0,pt1)):
-        print "Points are equal"
+        print ("Points are equal")
     else:
-        print "Points are NOT equal"
+        print ("Points are NOT equal")
 
     if (True):
-        print "Draw start ..."
+        print ("Draw start ...")
         robot.updateLinks(pts[0])
         fig2=plt.figure();
         fig2.suptitle("Start")
@@ -225,7 +230,7 @@ def convertObjects():
 
 
     if (True):
-        print "Draw finish ..."
+        print ("Draw finish ...")
         robot.updateLinks(pts[-1]) # get last point in path list
 
         fig3=plt.figure();
@@ -242,7 +247,7 @@ def convertObjects():
 
 
     if (True):
-        print "Draw intermediates ..."
+        print ("Draw intermediates ...")
         fig4=plt.figure();
         fig4.suptitle("Motion")
         ax4 = fig4.gca();
@@ -262,7 +267,7 @@ def convertObjects():
 
     if (True):
         if (len(workspace_x) > 0): # C-space was built
-            print "Now show the workspace with ",len(workspace_x), " points, and ",len(free_workspace_x)," free points"
+            print ("Now show the workspace with ",len(workspace_x), " points, and ",len(free_workspace_x)," free points")
             fig5=plt.figure();
             fig5.suptitle("Workspace")
             ax5 = fig5.gca();
@@ -280,10 +285,10 @@ def convertObjects():
             fig5.savefig( "animation/workspace.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
         else:
-            print "No C-space map was built!"
+            print ("No C-space map was built!")
 
     if (torus is not None):
-        print "Draw the torus ..."
+        print ("Draw the torus ...")
         fig7=plt.figure()
         ax7 = fig7.add_subplot(111,projection='3d')
         ax7.plot_surface(torus[0],torus[1],torus[2])
@@ -294,7 +299,7 @@ def convertObjects():
         fig7.savefig( "animation/torus.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
         if (len(collisions_theta1) > 0):
-            print "Draw the torus with collisions ..."
+            print ("Draw the torus with collisions ...")
             fig8=plt.figure()
             ax8 = fig8.add_subplot(111,projection='3d')
             ax8.plot_wireframe(torus[0],torus[1],torus[2],alpha=0.5,rstride=4,cstride=4,color='black')
@@ -309,14 +314,14 @@ def convertObjects():
 
             fig8.savefig( "animation/torus_obstacles.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
-    print "Close plots to continue ..."
+    print ("Close plots to continue ...")
     plt.show()
 
 
     #print "Done! - comment out the exit below to create images for motion video"
     #sys.exit(0)
 
-    print "Make video of motion ..."
+    print ("Make video of motion ...")
 
     fig6=plt.figure();
     fig6.suptitle("Motion")
@@ -340,7 +345,7 @@ def convertObjects():
     pt0 = np.asarray(deepcopy(pts[0]));# convert tuple to array so we can do math
     for pt in pts:
         pt1 = np.asarray(deepcopy(pt)) # convert tuple to array so we can do math
-        print pt1
+        print( pt1)
         if (not np.array_equal(pt1,pt0)):
           for s in np.arange(0.025,1.0,0.025): # interpolate along line from prior point to current
             pti = pt0 + (pt1-pt0)*s
@@ -360,63 +365,63 @@ def convertObjects():
             fig6.savefig( "animation/roboplan_animation_"+str(cnt)+".png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
 
         pt0 = pt1
-    print "Done!"
+    print ("Done!")
     return pts
 #https://github.com/HebiRobotics/hebi-python-examples/blob/master/basic/05_trajectory.py
-'''lookup = hebi.lookup()
+def getTheArmToMove():
+    lookup = hebi.Lookup()
 
-sleep(2.0)
+    sleep(2)
 
-family_name = "Test Family"
-module_name = "Test Actuator"
+    positions = convertObjects()
 
-group = lookup.get_group_from_names([family_name], [module_name])
+    group = hebi.util.create_imitation_group(3)
 
-if group is None:
-  print('Group not found! Check that the family and name of a module on the network')
-  print('matches what is given in the source file.')
-  exit(1)
+    if group is None:
+      print('Group not found! Check that the family and name of a module on the network')
+      print('matches what is given in the source file.')
+      exit(1)
 
-num_joints = group.size
-group_feedback = hebi.GroupFeedback(num_joints)
+    num_joints = group.size
+    group_feedback = hebi.GroupFeedback(num_joints)
 
-if group.get_next_feedback(reuse_fbk=group_feedback) is None:
-  print('Error getting feedback.')
-  exit(1)
+    '''
+    if group.get_next_feedback(reuse_fbk=group_feedback) is None:
+      print('Error getting feedback.')
+      exit(1)
+    '''
+    positions = np.zeros((num_joints, 3), dtype=np.float64)
+    offset = [math.pi] * num_joints
+    current_pos = group_feedback.position
 
-positions = np.zeros((num_joints, 3), dtype=np.float64)
-offset = [pi] * num_joints
-current_pos = group_feedback.position'''
+    time_vector = []
+    starttime = 0
+    steps = len(positions) / 60.0
+    for pt in positions:
+        time_vector.append((starttime))
+        starttime = starttime + steps
 
-positions = convertObjects()
-'''
-time_vector = []
-starttime = 0
-steps = len(positions) / 60.0
-for pt in positions:
-    timevector.append((starttime))
-    starttime = starttime + steps
+    trajectory = hebi.trajectory.create_trajectory(time_vector, positions)
 
-trajectory = hebi.trajectory.create_trajectory(time_vector, positions)
+    # Start logging in the background
+    group.start_log('logs')
 
-# Start logging in the background
-group.start_log('logs')
+    group_command = hebi.GroupCommand(num_joints)
+    duration = trajectory.duration
 
-group_command = hebi.GroupCommand(num_joints)
-duration = trajectory.duration
+    start = time()
+    t = time() - start
 
-start = time()
-t = time() - start
+    while t < duration:
+      # Serves to rate limit the loop without calling sleep
+      group.get_next_feedback(reuse_fbk=group_feedback)
+      t = time() - start
 
-while t < duration:
-  # Serves to rate limit the loop without calling sleep
-  group.get_next_feedback(reuse_fbk=group_feedback)
-  t = time() - start
+      pos, vel, acc = trajectory.get_state(t)
+      group_command.position = pos
+      group_command.velocity = vel
+      group.send_command(group_command)
 
-  pos, vel, acc = trajectory.get_state(t)
-  group_command.position = pos
-  group_command.velocity = vel
-  group.send_command(group_command)
-
-group.stop_log()'''
+    group.stop_log()
+getTheArmToMove()
 exit()
