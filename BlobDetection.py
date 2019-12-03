@@ -17,9 +17,6 @@ from argparse import *
 from RobotWorld import *
 import sys
 import random
-from sensor_msgs.msg import CameraInfo
-sys.path.append("/home/kinova/MillenCapstone/MadalynMillenCapstone/vision_opencv-melodic/image_geometry/src/image_geometry")
-import cameramodels
 
 #https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 def midpoint(point1, point2):
@@ -119,7 +116,7 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     imshow("image", original)
     waitKey(300)
 
-#Code used from https://stackoverflow.com/questions/25837544/get-all-points-of-a-straight-line-in-python, credit to user1048839 
+#Code used from https://stackoverflow.com/questions/25837544/get-all-points-of-a-straight-line-in-python, credit to user1048839
 def getLine(x1, y1, x2, y2):
     allPoints = []
     isStep = abs(y2 - y1) > abs(x2 - x1)
