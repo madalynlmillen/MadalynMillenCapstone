@@ -88,28 +88,12 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
 
     box = perspective.order_points(box)
     boxPointsList.append(box)
-    (botLeft, botRight, topRight, topLeft) = box
+    (topLeft, topRight, botRight, botLeft) = box
     newPoints = []
-    x1, y1 = topLeft
-    x2, y2 = topRight
-    x3, y3 = botRight
-    x4, y4 = botLeft
-    '''if x1 < 300:
-        x1 = 300 - x1
-    if x2 < 300:
-        x2 = 300 - x2
-    if x3 < 300:
-        x3 = 300 - x3
-    if x4 < 300:
-        x4 = 300 - x4
-    if y1 < 120:
-        y1 = 120 - y1
-    if x2 < 120:
-        y2 = 120 - y2
-    if y3 < 120:
-        y3 = 120 - y3
-    if y4 < 120:
-        y4 = 120 - y4'''
+    x1, y1 = topLeft / 20
+    x2, y2 = topRight / 20
+    x3, y3 = botRight / 20
+    x4, y4 = botLeft / 20
     angle = math.atan((y2-y1)/(x2-x1))*180/math.pi #https://pdnotebook.com/measuring-angles-in-opencv-2f0551b8dd5a
     print (angle)
     width = sqrt( (x2-x1)**2 + (y2-y1)**2 )

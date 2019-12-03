@@ -76,8 +76,8 @@ def convertObjects():
 
     # Define links for our simple robot
     #             ID   Length, color, width, parent(=None default)
-    link1 = Link(" 1 ", 200.0,'b',0.5)
-    link2 = Link(" 2 ", 60.0,'g',0.3, link1)
+    link1 = Link(" 1 ", 20.0,'b',0.5)
+    link2 = Link(" 2 ", 6.0,'g',0.3, link1)
 
     # Define a robot with tuple of links (2 in this case but could add more)
     robot = RobotArm((link1, link2))
@@ -380,7 +380,7 @@ def getTheArmToMove():
 
     positions = convertObjects()
 
-    group = lookup.get_group_from_names(["Family"], ["elbow"])
+    group = lookup.get_group_from_names(["Family"], ["elbow", "sholder_ext"])
 
     if group is None:
       print('Group not found! Check that the family and name of a module on the network')
@@ -394,7 +394,7 @@ def getTheArmToMove():
       print('Error getting feedback.')
       exit(1)
 
-    positions = np.zeros((num_joints, 3), dtype=np.float64)
+    positions = np.zeros((num_joints, 2), dtype=np.float64)
     offset = [math.pi] * num_joints
     current_pos = group_feedback.position
 

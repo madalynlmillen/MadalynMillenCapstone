@@ -246,8 +246,8 @@ def fullPath():
     print "Doing the search ..."
     grid = UndirectedGraph()  # Using Russell and Norvig code
 
-    start=(10,10)
-    goal=(20,20)
+    start=(20,20)
+    goal=(10,10)
 
 
     # Define the test cases we want to run
@@ -346,6 +346,6 @@ def fullPath():
 
         waitKey(500)
     for p in smallPath:
-        paths.append((radPoint, (math.atan(p.state[1] / p.state[0])) * (np.pi / 180)))
+        paths.append((((math.atan(p.state[0])) * (np.pi / 180)), ((math.atan(p.state[1])) * (np.pi / 180))))
         radPoint = radPoint + radAdd
     return paths
