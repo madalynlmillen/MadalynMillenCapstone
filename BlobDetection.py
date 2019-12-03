@@ -16,6 +16,7 @@ from cv2 import *
 from argparse import *
 from RobotWorld import *
 import sys
+import random
 from sensor_msgs.msg import CameraInfo
 sys.path.append("/home/kinova/MillenCapstone/MadalynMillenCapstone/vision_opencv-melodic/image_geometry/src/image_geometry")
 import cameramodels
@@ -26,10 +27,12 @@ def midpoint(point1, point2):
 
 def takePhoto():
     argpar = ArgumentParser()
-    argpar.add_argument("-i", "--image", required=True,
+    argpar.add_argument("-i", "--image", required=False,
         help="path to the input image")
-    argpar.add_argument("-w", "--width", type=float, required=True,
-        help="width of the left-most object in the image (in inches)")
+    '''argpar.add_argument("-w", "--start", type=int, required=False,
+        help="starting point of the path)")
+    argpar.add_argument("-w", "--end", type=int, required=False,
+        help="ending point of the path)")'''
     args = vars(argpar.parse_args())
     #https://stackoverflow.com/questions/11094481/capturing-a-single-image-from-my-webcam-in-java-or-python
     camera = VideoCapture(0)
@@ -43,7 +46,9 @@ def takePhoto():
         if not imwrite("workSpace.jpg", image):
             raise Exception("Could not write image")
         camera.release()
-    image = imread(args["image"])
+    if len(args) > 0:
+        if not (args["image"] is None):
+            image = imread(args["image"])
     '''newImage = imread(args["image"])
     cameraModel.rectifyImage(image, newImage)'''
     return args, image #newImage
@@ -83,25 +88,39 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
 
     box = perspective.order_points(box)
     boxPointsList.append(box)
-    (topLeft, topRight, botRight, botLeft) = box
+    (botLeft, botRight, topRight, topLeft) = box
     newPoints = []
-    '''cameraModel = cameramodels.PinholeCameraModel()
-    cameraModel.fromCameraInfo(CameraInfo())
-    for point in box:
-        newPoint = cameraModel.rectifyPoint(point)
-        print newPoint
-        newPoints.append(newPoint)
-    #newPoints = np.array(newPoints, dtype="int")'''
-    x1, y1 = topLeft 
+    x1, y1 = topLeft
     x2, y2 = topRight
     x3, y3 = botRight
     x4, y4 = botLeft
-    angle = math.atan((y1-y2)/(x2-x1))*180/math.pi #https://pdnotebook.com/measuring-angles-in-opencv-2f0551b8dd5a
-    width = sqrt( (x2-x1)**2 + (x2-x1)**2 )
-    height = sqrt( (x3-x2)**2 + (x3-x2)**2 )
-    color = '#ff7f0e'
+    '''if x1 < 300:
+        x1 = 300 - x1
+    if x2 < 300:
+        x2 = 300 - x2
+    if x3 < 300:
+        x3 = 300 - x3
+    if x4 < 300:
+        x4 = 300 - x4
+    if y1 < 120:
+        y1 = 120 - y1
+    if x2 < 120:
+        y2 = 120 - y2
+    if y3 < 120:
+        y3 = 120 - y3
+    if y4 < 120:
+        y4 = 120 - y4'''
+    angle = math.atan((y2-y1)/(x2-x1))*180/math.pi #https://pdnotebook.com/measuring-angles-in-opencv-2f0551b8dd5a
+    print (angle)
+    width = sqrt( (x2-x1)**2 + (y2-y1)**2 )
+    print(width[0])
+    height = sqrt( (x3-x2)**2 + (y3-y2)**2 )
+    print ((topLeft / 20))
+    print (height[0])
+    r, g, b = [random.random() for i in range(3)]
+    color = r, g, b, 1
 
-    obstacle = Obstacle("Obstacle " + str(obstacleNum), botLeft, width[0], height[0], color, angle)
+    obstacle = Obstacle("Obstacle " + str(obstacleNum), (x4, y4), width[0], height[0], color, angle)
     obstacleInfo.append(obstacle)
 
     listOfPoints.append(getLine(x1, y1, x2, y2))

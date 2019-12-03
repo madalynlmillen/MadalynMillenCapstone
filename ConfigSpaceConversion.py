@@ -13,6 +13,7 @@ import PathPlanning
 import hebi
 from time import sleep, time
 import math
+import random
 '''
 #Code inspired by https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
 '''
@@ -75,18 +76,21 @@ def convertObjects():
 
     # Define links for our simple robot
     #             ID   Length, color, width, parent(=None default)
-    link1 = Link(" 1 ", 10.0,'b',0.5)
-    link2 = Link(" 2 ", 6.0,'g',0.3, link1)
+    link1 = Link(" 1 ", 200.0,'b',0.5)
+    link2 = Link(" 2 ", 60.0,'g',0.3, link1)
 
     # Define a robot with tuple of links (2 in this case but could add more)
     robot = RobotArm((link1, link2))
-    robot.updateLinks((-1.49, 3.142)) # Define the initial angles
+    robot.updateLinks((np.pi/4, np.pi)) # Define the initial angles
 
     obstacles = []
+    r, g, b = [random.random() for i in range(3)]
+    color = r, g, b, 1
     counter = 1
     # Define obstacles
     for obstacle in obstacleInfo:
         obstacles.append(obstacle)
+    #obstacles.append(Obstacle("Obstacled ", (-3.0, 1.0), 2.0, 5.0, color))
     world = RobotWorld(robot, obstacles)
 
     #link1.updateTip(np.pi/4.0)
@@ -122,7 +126,7 @@ def convertObjects():
 
         print ("Define the torus ...")
         pi_diff = np.pi/100.0;#72.0;#36.0
-        thetas = np.arange(-np.pi, np.pi+pi_diff, pi_diff)
+        thetas = np.arange(0, np.pi+pi_diff, pi_diff)
         t1grid,t2grid = np.meshgrid(thetas,thetas)
 
         torus = theta2xyz(t1grid, t2grid)
@@ -158,7 +162,7 @@ def convertObjects():
         ax1=fig1.gca(projection='3d');
         ax1.grid(True);
         ax1.set_xlim([-np.pi, np.pi])
-        ax1.set_ylim([-np.pi, np.pi])
+        ax1.set_ylim([0, np.pi])
         ax1.set_aspect('equal', 'box');
 
         print ("Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ...")
@@ -188,7 +192,7 @@ def convertObjects():
             ax1.get_xaxis().set_visible(False)
             ax1.get_yaxis().set_visible(False)
             ax1.set_xlim([-np.pi, np.pi])
-            ax1.set_ylim([-np.pi, np.pi])
+            ax1.set_ylim([0, np.pi])
             ax1.set_aspect('equal', 'box');
             ax1.axis('off')
             print( "Now plotting ", len(collisions_theta1), " collision points for C-space obstacles ...")
@@ -201,6 +205,7 @@ def convertObjects():
        (2.012, 1.369), (2.27, 0.0), (2.48, -1.26)]
 
     pts = PathPlanning.fullPath() #takes obstacle info and tries to find a path for the arm
+    print (pts)
 
     if len(pts) == 0: #prevents an exception from being thrown if no path is found
         print ("No path was found.")
@@ -222,7 +227,7 @@ def convertObjects():
         ax2 = fig2.gca();
         ax2.grid(True);
         ax2.set_xlim([-max_len, max_len])
-        ax2.set_ylim([-max_len, max_len])
+        ax2.set_ylim([0, max_len])
         ax2.set_aspect('equal', 'box');
 
         world.drawWorld(ax2) # Draw robot and obstacles
@@ -238,7 +243,7 @@ def convertObjects():
         ax3 = fig3.gca();
         ax3.grid(True);
         ax3.set_xlim([-max_len, max_len])
-        ax3.set_ylim([-max_len, max_len])
+        ax3.set_ylim([0, max_len])
         ax3.set_aspect('equal', 'box');
 
         world.drawWorld(ax3);
@@ -273,7 +278,7 @@ def convertObjects():
             ax5 = fig5.gca();
             ax5.grid(True);
             ax5.set_xlim([-max_len, max_len])
-            ax5.set_ylim([-max_len, max_len])
+            ax5.set_ylim([0, max_len])
             ax5.set_aspect('equal', 'box');
 
             ax5.scatter(workspace_x,workspace_y,color='b', edgecolors='none')
@@ -293,7 +298,7 @@ def convertObjects():
         ax7 = fig7.add_subplot(111,projection='3d')
         ax7.plot_surface(torus[0],torus[1],torus[2])
         ax7.set_xlim([-max_len, max_len])
-        ax7.set_ylim([-max_len, max_len])
+        ax7.set_ylim([0, max_len])
         ax7.set_zlim([-max_len, max_len])
         ax7.set_aspect('equal', 'box');
         fig7.savefig( "animation/torus.png", format = "png", bbox_inches = 'tight', pad_inches = 0 )
@@ -304,7 +309,7 @@ def convertObjects():
             ax8 = fig8.add_subplot(111,projection='3d')
             ax8.plot_wireframe(torus[0],torus[1],torus[2],alpha=0.5,rstride=4,cstride=4,color='black')
             ax8.set_xlim([-max_len, max_len])
-            ax8.set_ylim([-max_len, max_len])
+            ax8.set_ylim([0, max_len])
             ax8.set_zlim([-max_len, max_len])
             ax8.set_aspect('equal', 'box');
 
@@ -328,7 +333,7 @@ def convertObjects():
     ax6 = fig6.gca();
     ax6.grid(True);
     ax6.set_xlim([-max_len, max_len])
-    ax6.set_ylim([-max_len, max_len])
+    ax6.set_ylim([0, max_len])
     ax6.set_aspect('equal', 'box');
 
     pt0 = np.asarray(deepcopy(pts[0]) )
@@ -354,7 +359,7 @@ def convertObjects():
             plt.cla()
             ax6.grid(True);
             ax6.set_xlim([-max_len, max_len])
-            ax6.set_ylim([-max_len, max_len])
+            ax6.set_ylim([0, max_len])
             ax6.set_aspect('equal', 'box');
 
             world.updateRobotArm(pti);
@@ -375,7 +380,7 @@ def getTheArmToMove():
 
     positions = convertObjects()
 
-    group = hebi.util.create_imitation_group(3)
+    group = lookup.get_group_from_names(["Family"], ["elbow"])
 
     if group is None:
       print('Group not found! Check that the family and name of a module on the network')
@@ -385,11 +390,10 @@ def getTheArmToMove():
     num_joints = group.size
     group_feedback = hebi.GroupFeedback(num_joints)
 
-    '''
     if group.get_next_feedback(reuse_fbk=group_feedback) is None:
       print('Error getting feedback.')
       exit(1)
-    '''
+
     positions = np.zeros((num_joints, 3), dtype=np.float64)
     offset = [math.pi] * num_joints
     current_pos = group_feedback.position
