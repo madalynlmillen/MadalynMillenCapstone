@@ -378,54 +378,81 @@ def getTheArmToMove():
 
     sleep(2)
 
-    positions = convertObjects()
+    points = convertObjects()
+    positionsElb = []
+    positionsSho = []
+    for x, y in points:
+        positionsElb.append(y)
+        positionsSho.append(x)
 
-    group = lookup.get_group_from_names(["Family"], ["elbow", "sholder_ext"])
+    group1 = lookup.get_group_from_names(["Elbow"], ["elbow"])
+    group2 = lookup.get_group_from_names(["Sholder"], ["sholder rot"])
 
-    if group is None:
+    if group1 is None or group2 is None:
       print('Group not found! Check that the family and name of a module on the network')
       print('matches what is given in the source file.')
       exit(1)
 
-    num_joints = group.size
-    group_feedback = hebi.GroupFeedback(num_joints)
+    num_joints = group1.size + group2.size
+    group_feedback1 = hebi.GroupFeedback(group1.size)
+    group_feedback2 = hebi.GroupFeedback(group2.size)
 
-    if group.get_next_feedback(reuse_fbk=group_feedback) is None:
+    if group1.get_next_feedback(reuse_fbk=group_feedback1) is None or group2.get_next_feedback(reuse_fbk=group_feedback2) is None:
       print('Error getting feedback.')
       exit(1)
 
-    positions = np.zeros((num_joints, 2), dtype=np.float64)
+    #positions = np.zeros((num_joints, 2), dtype=np.float64)
     offset = [math.pi] * num_joints
-    current_pos = group_feedback.position
+    current_pos1 = group_feedback1.position
+    current_pos2 = group_feedback2.position
 
-    time_vector = []
+    time_vector1 = []
     starttime = 0
-    steps = len(positions) / 60.0
-    for pt in positions:
-        time_vector.append((starttime))
+    steps = len(positionsElb) / 60.0
+    for pt in positionsElb:
+        time_vector1.append((starttime))
         starttime = starttime + steps
 
-    trajectory = hebi.trajectory.create_trajectory(time_vector, positions)
+    time_vector2 = []
+    steps = len(positionsSho) / 60.0
+    for pt in positionsElb:
+        time_vector2.append((starttime))
+        starttime = starttime + steps
+
+    trajectory1 = hebi.trajectory.create_trajectory(time_vector1, positionsElb)
+    trajectory2 = hebi.trajectory.create_trajectory(time_vector2, positionsSho)
 
     # Start logging in the background
-    group.start_log('logs')
+    group1.start_log('logs1')
+    group2.start_log('logs2')
 
-    group_command = hebi.GroupCommand(num_joints)
-    duration = trajectory.duration
+    group_command1 = hebi.GroupCommand(group1.size)
+    group_command2 = hebi.GroupCommand(group2.size)
+    duration1 = trajectory1.duration
 
     start = time()
     t = time() - start
 
-    while t < duration:
+    while t < duration1:
       # Serves to rate limit the loop without calling sleep
-      group.get_next_feedback(reuse_fbk=group_feedback)
+      group1.get_next_feedback(reuse_fbk=group_feedback1)
       t = time() - start
 
-      pos, vel, acc = trajectory.get_state(t)
-      group_command.position = pos
-      group_command.velocity = vel
-      group.send_command(group_command)
+      pos, vel, acc = trajectory1.get_state(t)
+      group_command1.position = pos
+      group_command1.velocity = vel
+      group1.send_command(group_command1)
 
-    group.stop_log()
+      # Serves to rate limit the loop without calling sleep
+      group2.get_next_feedback(reuse_fbk=group_feedback2)
+      t = time() - start
+
+      pos, vel, acc = trajectory2.get_state(t)
+      group_command2.position = pos
+      group_command2.velocity = vel
+      group2.send_command(group_command2)
+
+    group1.stop_log()
+    group2.stop_log()
 getTheArmToMove()
 exit()

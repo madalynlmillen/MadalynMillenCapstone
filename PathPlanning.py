@@ -247,7 +247,7 @@ def fullPath():
     grid = UndirectedGraph()  # Using Russell and Norvig code
 
     start=(13,20)
-    goal=(22,42)
+    goal=(16,30)
 
 
     # Define the test cases we want to run

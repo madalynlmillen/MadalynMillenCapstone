@@ -90,7 +90,7 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     boxPointsList.append(box)
     (topLeft, topRight, botRight, botLeft) = box
     newPoints = []
-    if topLeft[1] < 200 or topRight[1] < 200 or botRight[1] < 200 or botLeft[1] < 200:
+    if topLeft[1] < 100 or topRight[1] < 100 or botRight[1] < 100 or botLeft[1] < 100:
         return
     #scaling down the points to fit in the plane of the arm
     x1, y1 = (topLeft / 20) + 10
