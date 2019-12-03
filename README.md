@@ -47,3 +47,21 @@ ConfigSpaceConversion.py runs the detectAndDraw() code and takes the list output
 .idea, build, devel, and src are all catkin and ROS files, copied over from the ROS repository. These files are used as the framework for programming with ROS. In order to make use of these files, in a separate terminal, run the command roscore. If need be, run the command catkin_make afterwards to make sure all files are updated.
 
 All .jpg files were either taken by me or taken by running the code in BlobDetection.py. These photos are of example workspaces with a few different layouts of obstacles to test the blob detection code.
+
+Downloading Instructions:
+In order to use this project to it’s full function, there are a few things that need to be imported. That list includes:
+ROS
+Cv2/OpenCV
+Matplotlib
+Numpy
+Pillow
+Hebi (hebiros or hebi-python)
+Imutils
+
+This project can be downloaded as a zip. It can be started in the terminal by navigating to the workspace designated for it, and entering in the command
+python ConfigSpaceConversion.py 
+or
+python ConfigSpaceConversion.py --image “ImagePath.jpg”
+
+For easiest use, Python 2.7 should be used. However, if need be, it can be used with Python3. In order to do so, the references to cv2 need to be altered to the Python3 version of OpenCV
+
