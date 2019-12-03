@@ -76,7 +76,7 @@ def convertObjects():
 
     # Define links for our simple robot
     #             ID   Length, color, width, parent(=None default)
-    link1 = Link(" 1 ", 20.0,'b',0.5)
+    link1 = Link(" 1 ", 10.0,'b',0.5)
     link2 = Link(" 2 ", 6.0,'g',0.3, link1)
 
     # Define a robot with tuple of links (2 in this case but could add more)
@@ -257,7 +257,7 @@ def convertObjects():
         fig4.suptitle("Motion")
         ax4 = fig4.gca();
         ax4.grid(True);
-        ax4.set_xlim([0, max_len])
+        ax4.set_xlim([-max_len, max_len])
         ax4.set_ylim([0, max_len])
         ax4.set_aspect('equal', 'box');
 

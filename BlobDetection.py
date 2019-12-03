@@ -90,17 +90,21 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     boxPointsList.append(box)
     (topLeft, topRight, botRight, botLeft) = box
     newPoints = []
-    x1, y1 = topLeft / 20
-    x2, y2 = topRight / 20
-    x3, y3 = botRight / 20
-    x4, y4 = botLeft / 20
-    angle = math.atan((y2-y1)/(x2-x1))*180/math.pi #https://pdnotebook.com/measuring-angles-in-opencv-2f0551b8dd5a
-    print (angle)
+    if topLeft[1] < 200 or topRight[1] < 200 or botRight[1] < 200 or botLeft[1] < 200:
+        return
+    #scaling down the points to fit in the plane of the arm
+    x1, y1 = (topLeft / 20) + 10
+    x2, y2 = (topRight / 20) + 10
+    x3, y3 = (botRight / 20) + 10
+    x4, y4 = (botLeft / 20) + 10
+    #shifting the points so that they fit the plane of the arm
+    x1 = x1 - 20
+    x2 = x2 - 20
+    x3 = x3 - 20
+    x4 = x4 - 20
+    angle = 180 - (math.atan((y2-y1)/(x2-x1))*180/math.pi) #https://pdnotebook.com/measuring-angles-in-opencv-2f0551b8dd5a
     width = sqrt( (x2-x1)**2 + (y2-y1)**2 )
-    print(width[0])
     height = sqrt( (x3-x2)**2 + (y3-y2)**2 )
-    print ((topLeft / 20))
-    print (height[0])
     r, g, b = [random.random() for i in range(3)]
     color = r, g, b, 1
 

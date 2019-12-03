@@ -1,4 +1,4 @@
-expansions = 337
-max frontier = 147
-path cost=30
-Path=[<Node (20, 20)>, <Node (19, 19)>, <Node (18, 18)>, <Node (17, 17)>, <Node (16, 16)>, <Node (15, 15)>, <Node (14, 14)>, <Node (13, 13)>, <Node (12, 12)>, <Node (11, 11)>, <Node (10, 10)>]
+expansions = 1280
+max frontier = 203
+path cost=57
+Path=[<Node (13, 20)>, <Node (12, 21)>, <Node (13, 22)>, <Node (13, 23)>, <Node (13, 24)>, <Node (13, 25)>, <Node (12, 26)>, <Node (12, 27)>, <Node (13, 28)>, <Node (13, 29)>, <Node (14, 30)>, <Node (14, 31)>, <Node (15, 32)>, <Node (15, 33)>, <Node (15, 34)>, <Node (15, 35)>, <Node (16, 36)>, <Node (17, 37)>, <Node (18, 38)>, <Node (19, 39)>, <Node (20, 40)>, <Node (21, 41)>, <Node (22, 42)>]
