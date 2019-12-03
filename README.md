@@ -49,7 +49,7 @@ ConfigSpaceConversion.py runs the detectAndDraw() code and takes the list output
 All .jpg files were either taken by me or taken by running the code in BlobDetection.py. These photos are of example workspaces with a few different layouts of obstacles to test the blob detection code.
 
 Downloading Instructions:
-In order to use this project to it’s full function, there are a few things that need to be imported. That list includes:
+In order to use this project to it’s full function, a camera needs to be connected to the workstation and there are a few things that need to be imported. That list includes:
 ROS
 Cv2/OpenCV
 Matplotlib
