@@ -119,7 +119,7 @@ def contourBoxes(image, listOfPoints, boxPointsList, obstacleInfo, obstacleNum, 
     imshow("image", original)
     waitKey(300)
 
-#Code taken from https://stackoverflow.com/questions/25837544/get-all-points-of-a-straight-line-in-python
+#Code used from https://stackoverflow.com/questions/25837544/get-all-points-of-a-straight-line-in-python, credit to user1048839 
 def getLine(x1, y1, x2, y2):
     allPoints = []
     isStep = abs(y2 - y1) > abs(x2 - x1)
